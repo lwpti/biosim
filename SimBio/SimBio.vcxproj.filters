@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SimBio.cpp">
+    <ClCompile Include="src\environment\environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
