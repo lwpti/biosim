@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\organism\brain\BrainModel.h" />
     <ClInclude Include="src\organism\data\Location.h" />
     <ClInclude Include="src\organism\Organism.h" />
     <ClInclude Include="src\organism\organs\Body.h" />
+    <ClInclude Include="src\organism\organs\Brain.h" />
     <ClInclude Include="src\organism\organs\Legs.h" />
     <ClInclude Include="src\world\systems\Display.h" />
   </ItemGroup>
@@ -115,7 +117,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\lwpry\source\repos\SimBio\SimBio\src\organism;C:\Users\lwpry\source\repos\SimBio\SimBio\src\organism\organs;C:\Users\lwpry\source\repos\SimBio\SimBio\src\organism\data;C:\Users\lwpry\source\repos\SimBio\SimBio\src\world\systems;C:\Users\lwpry\source\repos\SimBio\SimBio\src\organism\organ;C:\Users\lwpry\source\repos\SimBio\SimBio\src\organism\organ\organs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\organism\brain;$(ProjectDir)src\organism\data;$(ProjectDir)src\organism\organs;$(ProjectDir)src\organism;$(ProjectDir)src\world\systems;$(ProjectDir)src\world;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

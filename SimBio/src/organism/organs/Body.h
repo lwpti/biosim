@@ -5,5 +5,8 @@ namespace simbio {
 		struct Body {
 			int size;
 		};
+
+		struct BodyIntent {
+		};
 	}
 }
