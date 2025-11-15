@@ -15,8 +15,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\environment\environment.cpp">
+    <ClCompile Include="src\organism\Organism.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\world\systems\DisplaySystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\organism\organ\Organ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\organism\organ\organs\Legs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\world.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\organism\Organism.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\organism\organ\Organ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\organism\organ\organs\Legs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\systems\DisplaySystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
