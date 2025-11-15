@@ -9,7 +9,6 @@ git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 .\bootstrap-vcpkg.bat
 .\vcpkg integrate install
-.\vcpkg install raylib
 .\vcpkg install raylib:x64-windows
 ```
 
