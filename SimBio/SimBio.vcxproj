@@ -19,15 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\organism\brain\BrainModel.h" />
     <ClInclude Include="src\organism\data\Location.h" />
     <ClInclude Include="src\organism\Organism.h" />
+    <ClInclude Include="src\organism\organisms\mover\Mover.h" />
     <ClInclude Include="src\organism\organs\Body.h" />
     <ClInclude Include="src\organism\organs\Brain.h" />
     <ClInclude Include="src\organism\organs\Legs.h" />
     <ClInclude Include="src\world\systems\Display.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\organism\organisms\mover\Mover.cpp" />
     <ClCompile Include="src\world\systems\Display.cpp" />
     <ClCompile Include="src\world\world.cpp" />
   </ItemGroup>
@@ -117,7 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\organism\brain;$(ProjectDir)src\organism\data;$(ProjectDir)src\organism\organs;$(ProjectDir)src\organism;$(ProjectDir)src\world\systems;$(ProjectDir)src\world;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\organism\organisms;$(ProjectDir)src\organism\brain;$(ProjectDir)src\organism\data;$(ProjectDir)src\organism\organs;$(ProjectDir)src\organism;$(ProjectDir)src\world\systems;$(ProjectDir)src\world;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
