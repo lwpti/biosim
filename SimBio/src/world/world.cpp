@@ -3,25 +3,25 @@
 #include "raylib.h"
 #include "Organism.h"
 
-using namespace std;
-
 int main() {
+    using namespace simbio::organism;
+
     flecs::world world;
     
     world.entity()
-        .set<simbio::organism::Body>({ 10 })
-        .set<simbio::organism::Legs>({ 10 })
-        .set<simbio::organism::Location>({ 100, 100, 0 });
+        .set<Body>({ 10 })
+        .set<Legs>({ 10 })
+        .set<Location>({ 100, 100, 0 });
 
     world.entity()
-        .set<simbio::organism::Body>({ 20 })
-        .set<simbio::organism::Legs>({ 10 })
-        .set<simbio::organism::Location>({ 200, 200, 0 });
+        .set<Body>({ 20 })
+        .set<Legs>({ 10 })
+        .set<Location>({ 200, 200, 0 });
 
     world.entity()
-        .set<simbio::organism::Body>({ 5 })
-        .set<simbio::organism::Legs>({ 10 })
-        .set<simbio::organism::Location>({ 300, 300, 0 });
+        .set<Body>({ 5 })
+        .set<Legs>({ 10 })
+        .set<Location>({ 300, 300, 0 });
 
     const int displayWidth = 1000;
     const int displayHeight = 1000;
