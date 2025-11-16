@@ -1,8 +1,8 @@
 #include "flecs.h"
-#include "Display.h"
 #include "raylib.h"
 #include "Organism.h"
 #include "mover/Mover.h"
+#include "Display.h"
 
 int main() {
     using namespace simbio::organism;

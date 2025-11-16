@@ -23,13 +23,15 @@
     <ClInclude Include="src\organism\Organism.h" />
     <ClInclude Include="src\organism\organisms\mover\Mover.h" />
     <ClInclude Include="src\organism\organs\Body.h" />
-    <ClInclude Include="src\organism\organs\Brain.h" />
     <ClInclude Include="src\organism\organs\Legs.h" />
+    <ClInclude Include="src\organism\organs\Organs.h" />
     <ClInclude Include="src\world\systems\Display.h" />
+    <ClInclude Include="src\world\systems\Movement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\organism\organisms\mover\Mover.cpp" />
     <ClCompile Include="src\world\systems\Display.cpp" />
+    <ClCompile Include="src\world\systems\Movement.cpp" />
     <ClCompile Include="src\world\world.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

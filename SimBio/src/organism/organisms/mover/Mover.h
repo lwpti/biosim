@@ -2,15 +2,13 @@
 
 #include <flecs.h>
 #include "Organism.h"
-#include <vector>
 
 namespace mover {
 	using namespace simbio::organism;
 	
-	struct MoverComponent {
-	};
+	struct MoverBrain {};
 
-	class Mover : Organism<MoverComponent> {
+	class Mover : Organism<MoverBrain> {
 	public:
 		Mover(flecs::world& world);
 		virtual flecs::entity create() const;

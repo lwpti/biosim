@@ -3,7 +3,7 @@
 namespace mover {
 	using namespace simbio::organism;
 
-	Mover::Mover(flecs::world& world) : Organism<MoverComponent>(world) {}
+	Mover::Mover(flecs::world& world) : Organism<MoverBrain>(world) {}
 
 	flecs::entity Mover::create() const {
 		return world.entity()

@@ -1,28 +1,13 @@
 #pragma once
 
-#include <variant>
-#include <vector>
 #include <type_traits>
 #include <optional>
 #include <flecs.h>
-
+#include "Organs.h"
 #include "Location.h"
-
-#include "Body.h"
-#include "Legs.h"
 
 namespace simbio {
 	namespace organism {
-		struct Organs {
-			const Body* body;
-			const Legs* legs;
-		};
-
-		struct Intents {
-			std::optional<BodyIntent> body;
-			std::optional<LegsIntent> legs;
-		};
-
 		// This needs to be verified. Is this enough (or too much) to ensure T will work with flecs?
 		template <typename T>
 		concept FlecsComponent =
@@ -33,7 +18,7 @@ namespace simbio {
 			!std::is_reference_v<T> &&
 			!std::is_abstract_v<T>;
 
-		template <FlecsComponent Component>
+		template <FlecsComponent Brain>
 		class Organism {
 		public:
 			virtual ~Organism() = default;
@@ -45,8 +30,8 @@ namespace simbio {
 
 		protected:
 			Organism(flecs::world& world) : world(world) {
-				world.system<Component>()
-					.each([this](flecs::entity e, const Component& component)
+				world.system<Brain>()
+					.each([this](flecs::entity e, const Brain& brain)
 						{
 							Organs organs;
 							organs.body = e.try_get<Body>();
@@ -56,7 +41,7 @@ namespace simbio {
 
 							this->think(organs, intents);
 						});
-			}	
+			}
 
 			flecs::world& world;
 		};
