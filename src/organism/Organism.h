@@ -1,10 +1,10 @@
 #pragma once
 
-#include <type_traits>
-#include <optional>
 #include <flecs.h>
-#include "Organs.h"
-#include "Location.h"
+#include <optional>
+#include <type_traits>
+#include "data/Location.h"
+#include "organs/Organs.h"
 
 namespace simbio {
 	namespace organism {

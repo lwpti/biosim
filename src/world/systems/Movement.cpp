@@ -1,8 +1,8 @@
 #include <cmath>
 #include "Movement.h"
-#include "Legs.h"
-#include "Location.h"
-#include "Velocity.h"
+#include "organs/Legs.h"
+#include "data/Location.h"
+#include "data/Velocity.h"
 
 namespace simbio {
     namespace systems {
