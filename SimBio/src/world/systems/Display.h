@@ -6,7 +6,8 @@ namespace simbio {
 	namespace systems {
 		class Display {
 		public:
-			Display(flecs::world& world, int width, int height);
+			Display(int width, int height);
+			void registerDrawSystems(flecs::world& world) const;
 
 		private:
 			const int width;

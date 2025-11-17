@@ -7,9 +7,9 @@ namespace simbio {
 		};
 
 		struct LegsIntent {
-			int direction;
-			int magnitude;
-			int turn;
+			float direction;
+			float magnitude;
+			float turn;
 		};
 	}
 }

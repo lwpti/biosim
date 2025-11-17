@@ -3,6 +3,8 @@
 #include "Organism.h"
 #include "mover/Mover.h"
 #include "Display.h"
+#include "Movement.h"
+#include <Velocity.h>
 
 int main() {
     using namespace simbio::organism;
@@ -10,18 +12,20 @@ int main() {
     flecs::world world;
     
     mover::Mover mover(world);
-    mover.create().set<Location>({ 100, 100, 0 });
-    mover.create().set<Location>({ 200, 200, 0 });
-    mover.create().set<Location>({ 300, 300, 0 });
+    mover.create().set<Location>({ 100, 100, 0 }).set<Velocity>({ 0, 0 });
+    mover.create().set<Location>({ 200, 200, 0 }).set<Velocity>({ 0, 0 });
+    mover.create().set<Location>({ 300, 300, 0 }).set<Velocity>({ 0, 0 });
+
+    simbio::systems::Movement movement;
+    movement.registerMoveIntentSystem(world);
+    movement.registerMovementSystem(world);
 
     const int displayWidth = 1000;
     const int displayHeight = 1000;
-
-    simbio::systems::Display display(world, displayWidth, displayHeight);
+    simbio::systems::Display(displayWidth, displayHeight).registerDrawSystems(world);
 
     InitWindow(displayWidth, displayHeight, "SimBio");
-    SetTargetFPS(30);
-
+    //SetTargetFPS(300);
 
     while (!WindowShouldClose()) {
         BeginDrawing();

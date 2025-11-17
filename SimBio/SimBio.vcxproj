@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\organism\data\Location.h" />
+    <ClInclude Include="src\organism\data\Velocity.h" />
     <ClInclude Include="src\organism\Organism.h" />
     <ClInclude Include="src\organism\organisms\mover\Mover.h" />
     <ClInclude Include="src\organism\organs\Body.h" />

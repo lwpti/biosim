@@ -6,7 +6,8 @@ namespace simbio {
 	namespace systems {
 		class Movement {
 		public:
-			Movement(flecs::world& world);
+			void registerMoveIntentSystem(flecs::world& world);
+			void registerMovementSystem(flecs::world& world);
 		};
 	}
 }

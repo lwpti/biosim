@@ -2,10 +2,9 @@
 
 namespace simbio {
 	namespace organism {
-		struct Location {
+		struct Velocity {
 			float x;
 			float y;
-			float yaw;
 		};
 	}
 }

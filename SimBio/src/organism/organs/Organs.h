@@ -1,18 +1,19 @@
 #pragma once
 
+#include <optional>
 #include "Body.h"
 #include "Legs.h"
 
 namespace simbio {
 	namespace organism {
 		struct Organs {
-			const Body* body;
-			const Legs* legs;
+			std::optional<Body> body;
+			std::optional<Legs> legs;
 		};
 
 		struct Intents {
-			const BodyIntent* body;
-			const LegsIntent* legs;
+			std::optional<BodyIntent> body;
+			std::optional<LegsIntent> legs;
 		};
 	}
 }

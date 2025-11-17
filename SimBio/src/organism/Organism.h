@@ -31,15 +31,17 @@ namespace simbio {
 		protected:
 			Organism(flecs::world& world) : world(world) {
 				world.system<Brain>()
-					.each([this](flecs::entity e, const Brain& brain)
+					.each([this](flecs::entity e, const Brain& brain) 
 						{
 							Organs organs;
-							organs.body = e.try_get<Body>();
-							organs.legs = e.try_get<Legs>();
+							if (const Body* body = e.try_get<Body>()) organs.body = *body;
+							if (const Legs* legs = e.try_get<Legs>()) organs.legs = *legs;
 
 							Intents intents;
 
 							this->think(organs, intents);
+							if (intents.body.has_value()) e.set<BodyIntent>(*intents.body);
+							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 						});
 			}
 
