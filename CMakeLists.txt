@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 project(SimBio)
 
 set(CMAKE_CXX_STANDARD 23)
-
 set(RAYLIB_VERSION 5.5)
+
 find_package(raylib ${RAYLIB_VERSION} QUIET)
 if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     include(FetchContent)
@@ -19,7 +19,5 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     endif()
 endif()
 
-add_subdirectory(src)
 add_subdirectory(flecs)
-
-target_link_libraries(SimBio raylib flecs)
+add_subdirectory(src)
