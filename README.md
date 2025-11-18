@@ -2,15 +2,13 @@
 
 ---
 
-## Install Raylib using Visual Studio and vcpkg
+## Pull all submodules (`flecs` and `raylib`)
 
 ```bash
-git clone https://github.com/microsoft/vcpkg
-cd vcpkg
-.\bootstrap-vcpkg.bat
-.\vcpkg integrate install
-.\vcpkg install raylib:x64-windows
+git submodule update --init --recursive
 ```
+
+The only runnable target is the SimBio executable. Visual Studio shows this as "SimBio.exe".
 
 ---
 
@@ -74,4 +72,4 @@ Students will collaborate to design and create a simulated environment which inc
 
 - Connects input organs (Eyes, Ears, Arms, Mouths) to output organs (Legs, Arms, Mouths)  
 - Black box; can use any internal AI  
-- Consumes a moderate amount of energy based on compute time  
+- Consumes a moderate amount of energy based on compute time
