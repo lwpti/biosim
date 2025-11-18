@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include <cmath>
-#include "Organs.h"
-#include "Location.h"
+#include "organs/Organs.h"
+#include "data/Location.h"
 #include "Display.h"
 
 namespace simbio {

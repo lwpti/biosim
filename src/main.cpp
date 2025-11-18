@@ -1,10 +1,10 @@
 #include "flecs.h"
-#include "raylib.h"
 #include "Organism.h"
-#include "mover/Mover.h"
-#include "Display.h"
-#include "Movement.h"
-#include <Velocity.h>
+#include "raylib.h"
+#include "organism/data/Velocity.h"
+#include "organism/organisms/mover/Mover.h"
+#include "world/systems/Display.h"
+#include "world/systems/Movement.h"
 
 int main() {
     using namespace simbio::organism;
