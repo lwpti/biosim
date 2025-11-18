@@ -28,6 +28,7 @@ namespace mover {
 			.set<Legs>({ 10 });
 	}
 
+	// Currently, the Mover brain just accelerates in a random direction.
 	void Mover::think(const Organs& organs, Intents& intents) const {
 		float direction = (rand() / (float)RAND_MAX) * 2.0f * std::numbers::pi_v<float>;
 		float magnitude = (rand() / (float)RAND_MAX) * 20.0f;
