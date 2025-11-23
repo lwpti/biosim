@@ -7,7 +7,7 @@ namespace simbio {
 		class Movement {
 		public:
 			/// <summary>
-			/// Registers the MovIntent flecs system. 
+			/// Registers the MoveIntent flecs system. 
 			/// The system parameters are const Legs& and const LegsIntent&.
 			/// This system verifies that the LegsIntent is possible given the size of
 			/// the Legs (and restricts it if not) then adds a Move component.

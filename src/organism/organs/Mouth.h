@@ -4,7 +4,7 @@ namespace simbio {
 	namespace organism {
 		/// <summary>
 		/// flecs component; the Mouth allows organisms to damage and eat other organisms and
-		/// to produce sound. Plants can be eaten without a Mouth.
+		/// plants, and to produce sound.
 		/// </summary>
 		struct Mouth {
 			int size;

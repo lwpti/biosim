@@ -6,7 +6,7 @@
 
 namespace simbio {
     namespace systems {
-        using namespace simbio::organism;
+        using namespace organism;
 
         void Movement::registerMoveIntentSystem(flecs::world& world) {
             world.system<Legs, LegsIntent>("MoveIntentSystem")

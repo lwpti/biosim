@@ -8,7 +8,7 @@ add_executable(SimBio
         
         world/systems/Movement.cpp
         organism/organisms/mover/Mover.cpp
- "organism/organs/Arms.h" "organism/organs/Ears.h" "organism/organs/Eyes.h" "organism/percepts/Sound.h" "organism/percepts/Touch.h" "world/systems/Vision.h" "world/systems/Hearing.h" "world/systems/Combat.h")
+ "organism/organs/Arms.h" "organism/organs/Ears.h" "organism/organs/Eyes.h" "organism/percepts/Sound.h" "organism/percepts/Touch.h" "world/systems/Vision.h" "world/systems/Hearing.h" "world/systems/Combat.h" "world/systems/Death.h" "world/systems/Death.cpp" "world/plants/Flower.h" "world/systems/Eating.h")
 
 target_link_libraries(SimBio raylib flecs)
 
