@@ -6,7 +6,7 @@ namespace simbio {
 		/// flecs component; allows an organism to perceive sight.
 		/// </summary>
 		struct Eyes {
-			int size;
+			float size;
 		};
 	}
 }

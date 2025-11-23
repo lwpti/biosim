@@ -7,7 +7,7 @@ namespace simbio {
 		/// energy usage. It also will determine how much an organism can eat.
 		/// </summary>
 		struct Body {
-			int size;
+			float size;
 		};
 	}
 }

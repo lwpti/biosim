@@ -6,7 +6,7 @@ namespace simbio {
 		/// flecs component; Arms determine how strongly an organism can hold another.
 		/// </summary>
 		struct Arms {
-			int size;
+			float size;
 		};
 
 		/// <summary>

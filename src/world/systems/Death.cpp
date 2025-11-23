@@ -10,7 +10,7 @@ namespace simbio {
             world.system<Status>("DeathSystem")
                 .each([](flecs::entity e, const Status& status)
                     {
-                        if (status.energy == 0 || status.health == 0) e.destruct();
+                        if (status.energy <= 0.0f || status.health <= 0.0f) e.destruct();
                     });
         }
     }

@@ -51,6 +51,7 @@ namespace simbio {
 			struct Organs {
 				std::optional<Body> body;
 				std::optional<Legs> legs;
+				std::optional<Mouth> mouth;
 			};
 			
 			/// <summary>
@@ -58,6 +59,7 @@ namespace simbio {
 			/// </summary>
 			struct Intents {
 				std::optional<LegsIntent> legs;
+				std::optional<BiteIntent> bite;
 			};
 
 			/// <summary>
@@ -82,11 +84,13 @@ namespace simbio {
 							Organs organs;
 							if (const Body* body = e.try_get<Body>()) organs.body = *body;
 							if (const Legs* legs = e.try_get<Legs>()) organs.legs = *legs;
+							if (const Mouth* mouth = e.try_get<Mouth>()) organs.mouth = *mouth;
 
 							Intents intents;
 							
 							this->think(organs, intents);
 							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
+							if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
 						});
 			}
 

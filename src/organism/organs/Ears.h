@@ -6,7 +6,7 @@ namespace simbio {
 		/// flecs component; allows an organism to perceive sound.
 		/// </summary>
 		struct Ears {
-			int size;
+			float size;
 		};
 	}
 }

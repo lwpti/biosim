@@ -7,13 +7,19 @@ namespace simbio {
 		/// plants, and to produce sound.
 		/// </summary>
 		struct Mouth {
-			int size;
+			float size;
 		};
 
 		/// <summary>
-		/// flecs component; describes a desire to bite or make noise.
+		/// flecs component; describes a desire to bite.
 		/// </summary>
-		struct MouthIntent {
+		struct BiteIntent {
+		};
+
+		/// <summary>
+		/// flecs component; describes a desire to make noise.
+		/// </summary>
+		struct CryIntent {
 		};
 	}
 }

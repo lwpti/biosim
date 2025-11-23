@@ -6,9 +6,7 @@ namespace simbio {
 		/// flecs component; describes a 2D position and rotation.
 		/// </summary>
 		struct Location {
-			float x;
-			float y;
-			float yaw;
+			float x, y, yaw;
 		};
 	}
 }

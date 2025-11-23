@@ -22,7 +22,10 @@ namespace simbio {
 			/// modifying Location and Velocity.
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
-			void registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight);
+			/// <param name="worldWidth">Width of the world</param>
+			/// <param name="worldHeight">Height of the world</param>
+			/// <param name="timeStep">Time between world state progressions</param>
+			void registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight, float timeStep);
 
 		private:
 			/// <summary>
@@ -30,9 +33,10 @@ namespace simbio {
 			/// angular acceleration.
 			/// </summary>
 			struct Move {
-				float aDirection;
-				float aMagnitude;
-				float aAngular;
+				struct {
+					float magnitude, x, y;
+				} a;
+				float yaw;
 			};
 
 			int worldWidth;

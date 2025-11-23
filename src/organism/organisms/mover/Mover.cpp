@@ -1,4 +1,4 @@
-#include <organisms/mover/Mover.h>
+#include "Mover.h"
 #include <random>
 #include <numbers>
 
@@ -30,8 +30,8 @@ namespace mover {
 
 	// Currently, the Mover brain just accelerates in a random direction.
 	void Mover::think(const Organs& organs, Intents& intents) const {
-		float direction = (rand() / (float)RAND_MAX) * 2.0f * std::numbers::pi_v<float>;
-		float magnitude = (rand() / (float)RAND_MAX) * 20.0f;
-		intents.legs = LegsIntent(direction, magnitude, 0.0f);
+		float ax = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
+		float ay = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
+		intents.legs = LegsIntent({ ax, ay }, 0.0f);
 	}
 }

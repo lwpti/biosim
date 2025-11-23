@@ -6,8 +6,7 @@ namespace simbio {
 		/// flecs component; describes a 2D position and rotation.
 		/// </summary>
 		struct Status {
-			float health;
-			float energy;
+			float health, energy;
 		};
 	}
 }
