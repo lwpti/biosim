@@ -22,7 +22,7 @@ namespace simbio {
 			/// modifying Location and Velocity.
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
-			void registerMovementSystem(flecs::world& world);
+			void registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight);
 
 		private:
 			/// <summary>
@@ -34,6 +34,9 @@ namespace simbio {
 				float aMagnitude;
 				float aAngular;
 			};
+
+			int worldWidth;
+			int worldHeight;
 		};
 	}
 }

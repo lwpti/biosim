@@ -57,7 +57,6 @@ namespace simbio {
 			/// Convenient structure for think method
 			/// </summary>
 			struct Intents {
-				std::optional<BodyIntent> body;
 				std::optional<LegsIntent> legs;
 			};
 
@@ -85,9 +84,8 @@ namespace simbio {
 							if (const Legs* legs = e.try_get<Legs>()) organs.legs = *legs;
 
 							Intents intents;
-
+							
 							this->think(organs, intents);
-							if (intents.body.has_value()) e.set<BodyIntent>(*intents.body);
 							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 						});
 			}

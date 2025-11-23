@@ -9,12 +9,5 @@ namespace simbio {
 		struct Body {
 			int size;
 		};
-
-		/// <summary>
-		/// flecs component; there are no actions associated with the Body component so I'll
-		/// delete this later.
-		/// </summary>
-		struct BodyIntent {
-		};
 	}
 }
