@@ -8,7 +8,7 @@ namespace eater {
 	
 	struct EaterBrain {};
 
-	class Eater : Organism<EaterBrain> {
+	class Eater : public Organism<EaterBrain> {
 	public:
 		Eater(flecs::world& world);
 		virtual flecs::entity create() const;

@@ -8,7 +8,7 @@ namespace mover {
 	
 	struct MoverBrain {};
 
-	class Mover : Organism<MoverBrain> {
+	class Mover : public Organism<MoverBrain> {
 	public:
 		Mover(flecs::world& world);
 		virtual flecs::entity create() const;

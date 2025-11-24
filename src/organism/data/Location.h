@@ -7,6 +7,7 @@ namespace simbio {
 		/// </summary>
 		struct Location {
 			float x, y, yaw;
+			int chunk;
 		};
 	}
 }

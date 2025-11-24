@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flecs.h"
+#include <vector>
 
 namespace simbio {
 	namespace systems {
@@ -25,12 +26,15 @@ namespace simbio {
 			/// <param name="worldWidth">Width of the world</param>
 			/// <param name="worldHeight">Height of the world</param>
 			/// <param name="timeStep">Time between world state progressions</param>
-			void registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight, float timeStep);
+			/// <param name="chunkGrid">Reference to the chunk grid to update organism chunk positions</param>
+			/// <param name="chunkSize">Size of each chunk in the chunk grid</param>
+			/// <param name="chunkCols">Number of columns in the chunk grid</param>
+			void registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight, 
+				float timeStep, std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols);
 
 		private:
 			/// <summary>
-			/// Describes a 2D movement - acceleration direction and magnitude, and
-			/// angular acceleration.
+			/// Describes a 2D movement - acceleration magnitudue, x and y components, and yaw.
 			/// </summary>
 			struct Move {
 				struct {
@@ -38,9 +42,6 @@ namespace simbio {
 				} a;
 				float yaw;
 			};
-
-			int worldWidth;
-			int worldHeight;
 		};
 	}
 }
