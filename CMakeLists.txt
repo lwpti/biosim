@@ -4,6 +4,8 @@ project(SimBio)
 set(CMAKE_CXX_STANDARD 23)
 set(RAYLIB_VERSION 5.5)
 
+add_compile_definitions(FLECS_CPP_NO_ENUM_REFLECTION)
+
 find_package(raylib ${RAYLIB_VERSION} QUIET)
 if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     include(FetchContent)

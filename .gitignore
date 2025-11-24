@@ -9,6 +9,18 @@
 *.user
 *.userosscache
 *.sln.docstates
+/build/
+/bin/
+/Debug/
+/Release/
+/vcpkg/
+CMakeFiles/
+CMakeCache.txt
+*.sln
+*.vcxproj*
+.vscode/
+*.DS_Store
+Thumbs.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

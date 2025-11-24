@@ -10,21 +10,21 @@ namespace mover {
 	flecs::entity Mover::create() const {
 		return world.entity()
 			.add<MoverBrain>()
-			.set<Body>({ 10 })
+			.set<Body>({ 10, { 0, 191, 255 } })
 			.set<Legs>({ 10 });
 	}
 
 	flecs::entity Mover::create(const flecs::entity& parent) const {
 		return world.entity()
 			.add<MoverBrain>()
-			.set<Body>({ 10 })
+			.set<Body>({ 10, { 0, 191, 255 } })
 			.set<Legs>({ 10 });
 	}
 
 	flecs::entity Mover::create(const flecs::entity& mother, const flecs::entity& father) const {
 		return world.entity()
 			.add<MoverBrain>()
-			.set<Body>({ 10 })
+			.set<Body>({ 10, { 0, 191, 255 } })
 			.set<Legs>({ 10 });
 	}
 

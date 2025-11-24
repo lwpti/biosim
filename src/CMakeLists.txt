@@ -8,10 +8,13 @@ add_executable(SimBio
 
     world/systems/Movement.cpp
     world/systems/Death.cpp
+    world/systems/FlowerReproduction.cpp
 
     organism/organisms/eater/Eater.cpp 
     organism/organisms/mover/Mover.cpp
 )
+
+target_compile_definitions(SimBio PRIVATE FLECS_CPP_NO_ENUM_REFLECTION)
 
 target_link_libraries(SimBio raylib flecs)
 

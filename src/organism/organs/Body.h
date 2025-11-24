@@ -1,5 +1,7 @@
 #pragma once
 
+#include <raylib.h>
+
 namespace simbio {
 	namespace organism {
 		/// <summary>
@@ -8,6 +10,7 @@ namespace simbio {
 		/// </summary>
 		struct Body {
 			float size;
+			Color color;
 		};
 	}
 }

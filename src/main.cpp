@@ -6,7 +6,9 @@
 #include "organism/organisms/eater/Eater.h"
 #include "world/systems/Movement.h"
 #include "world/systems/Death.h"
+#include "world/systems/FlowerReproduction.h"
 #include <cmath>
+#include <random>
 #include "data/Status.h"
 #include "plants/Flower.h"
 
@@ -15,6 +17,11 @@ int main() {
     using namespace simbio::plants;
 
     flecs::world world;
+
+    const int displayWidth = 1000;
+    const int displayHeight = 1000;
+    const float timeStep = 0.1f;
+    const int simSpeed = 10;
 
 	// Enforce Legs size constraints
 	Legs::registerLegsObserver(world);
@@ -31,21 +38,34 @@ int main() {
     eater.create().set<Location>({ 200, 200, 3 }).set<Velocity>({ 0, 0 }).set<Status>({ 100, 100 });
     eater.create().set<Location>({ 300, 300, 6 }).set<Velocity>({ 0, 0 }).set<Status>({ 100, 100 });
 
-    // Spawn some Flowers
-    world.entity().set<Flower>({ 5 }).set<Location>({ 150, 150, 0 });
-    world.entity().set<Flower>({ 5 }).set<Location>({ 250, 250, 0 });
-    world.entity().set<Flower>({ 5 }).set<Location>({ 350, 350, 0 });
+    // Spawn Flowers across the grid (~1 per 10x10 square)
+    Color flowerColor{ 0, 228, 48, 255 };
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::exponential_distribution<float> reproductionTimerDist(1.0f / 15.0f);
+    std::uniform_int_distribution<int> sizeDist(Flower::MIN_SIZE, Flower::MAX_SIZE);
+    std::uniform_int_distribution<int> locationDist(0, 1000);
+
+    for (float x = 5; x < displayWidth; x += 10) {
+        for (float y = 5; y < displayHeight; y += 10) {
+            world.entity()
+                .set<Flower>(Flower{ sizeDist(rng), flowerColor, (int)std::ceil(15.0f + reproductionTimerDist(rng) / timeStep) })
+                .set<Location>({ x, y, 0.0f });
+        }
+    }
 
     // Register MoveIntent and Movement systems
-    const int displayWidth = 1000;
-    const int displayHeight = 1000;
     simbio::systems::Movement movement;
     movement.registerMoveIntentSystem(world);
-    movement.registerMovementSystem(world, displayWidth, displayHeight, 0.1);
+    movement.registerMovementSystem(world, displayWidth, displayHeight, timeStep);
 
     //Register Death system
     simbio::systems::Death death;
     death.registerDeathSystem(world);
+
+    // Register flower reproduction system
+    simbio::systems::FlowerReproduction flowerReproduction;
+    flowerReproduction.registerFlowerReproductionSystem(world, timeStep, displayWidth, displayHeight);
 
     // Initialize queries for displaying organisms and plants
     auto drawBodyQuery = world.query<const Body, const Location>();
@@ -60,11 +80,12 @@ int main() {
         BeginDrawing();
         ClearBackground(BLACK);
 
-        for (int i = 0; i < 10; i++) world.progress(0.1);
+        for (int i = 0; i < simSpeed; i++) world.progress(timeStep);
 
         drawBodyQuery.each([](const Body& body, const Location& location) {
-            DrawCircleV({ location.x, location.y }, body.size * 0.5f, RED);
-            });
+            DrawCircleV({ location.x, location.y }, body.size * 0.5f, 
+                Color{ body.color.r, body.color.g, body.color.b, 255 });
+        });
 
         drawLegsQuery.each([](const Body& body, const Legs& legs, const Location& location) {
             float radius = body.size * 0.5f;
@@ -94,7 +115,7 @@ int main() {
 
                 DrawLineEx(start, end, legWidth, GREEN);
             }
-            });
+        });
 
 
         drawMouthQuery.each([](const Body& body, const Mouth& mouth, const Location& location) {
@@ -125,11 +146,11 @@ int main() {
 
             DrawLineEx(base, tip1, 4.0f, WHITE);
             DrawLineEx(base, tip2, 4.0f, WHITE);
-            });
+        });
 
         drawFlowersQuery.each([](const Flower& flower, const Location& location) {
-            DrawCircleV({ location.x, location.y }, flower.size * 0.5f, GREEN);
-            });
+            DrawCircleV({ location.x, location.y }, flower.size * 0.5f, flower.color);
+        });
 
         EndDrawing();
     }
