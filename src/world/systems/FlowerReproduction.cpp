@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-
 #include "data/Location.h"
 
 namespace simbio {
@@ -37,8 +36,8 @@ namespace simbio {
 				
 					float x = flower.location.x + std::copysign(sizeOffset, xOffset) + xOffset;
 					float y = flower.location.y + std::copysign(sizeOffset, yOffset) + yOffset;
-					x = x > this->worldWidth ? 0.0f : x;
-					y = y > this->worldHeight ? 0.0f : y;
+					x = x >= this->worldWidth ? 0.0f : x;
+					y = y >= this->worldHeight ? 0.0f : y;
 					x = x < 0.0f ? this->worldWidth - 0.0001f : x;
 					y = y < 0.0f ? this->worldHeight - 0.0001f : y;
 

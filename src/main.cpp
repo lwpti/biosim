@@ -125,7 +125,7 @@ int main() {
     }
 
     InitWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "SimBio");
-    SetTargetFPS(30);
+    //SetTargetFPS(30);
 
     while (!WindowShouldClose()) {
         if (GetKeyPressed() != 0) break;
