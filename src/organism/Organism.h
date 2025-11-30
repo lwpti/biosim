@@ -8,6 +8,12 @@
 
 namespace simbio {
 	namespace organism {
+		struct SimpleEntity {
+			Location location;
+			int size;
+			flecs::entity_t entityId;
+		};
+
 		// This needs to be verified. Is this enough (or too much) to ensure T will work with flecs?
 		template <typename T>
 		concept FlecsComponent =

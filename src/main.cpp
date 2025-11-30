@@ -16,6 +16,7 @@
 #include <utility>
 #include <concepts>
 #include <algorithm>
+#include <thread>
 
 /// <summary>
 /// Draws all organisms and plants in the flecs world.
@@ -39,13 +40,15 @@ void draw(flecs::world& world);
 /// <param name="chunkCols">Number of columns in the chunk grid</param>
 template <typename Brain>
 void spawnOrganisms(simbio::organism::Organism<Brain>& organism, int count, float minX, float minY, float maxX, float maxY, 
-    std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols);
+    std::vector<std::vector<simbio::organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols);
 
 int main() {
     using namespace simbio::organism;
     using namespace simbio::plants;
 
     flecs::world world;
+
+    //world.set_threads(std::thread::hardware_concurrency() - 1);
 
     // Currently, displayWidth and displayHeight must be multiples of FLOWER_SPAWN_BOX_SIZE for flower spawning...
     // ...and a multiple of 16 for chunks.
@@ -59,13 +62,10 @@ int main() {
     const int CHUNK_ROWS = DISPLAY_HEIGHT / CHUNK_SIZE;
 
     // Create chunk grid for spatial partitioning.
-    std::vector<std::vector<flecs::entity_t>> chunkGrid(CHUNK_COLS * CHUNK_ROWS);
+    std::vector<std::vector<SimpleEntity>> chunkGrid(CHUNK_COLS * CHUNK_ROWS);
 
 	// Enforce Legs size constraints.
 	Legs::registerLegsObserver(world);
-
-    // Give Flowers default death timer on creation.
-    Flower::registerFlowerObserver(world, TIME_STEP);
 
     // Spawn some Mover entities.
     mover::Mover mover(world);
@@ -75,13 +75,28 @@ int main() {
     eater::Eater eater(world);
     spawnOrganisms(eater, 3, 800.0f, 800.0f, 900.0f, 900.0f, chunkGrid, CHUNK_SIZE, CHUNK_COLS);;
 
+    // Register MoveIntent and Movement systems.
+    simbio::systems::Movement movement;
+    movement.registerMoveIntentSystem(world);
+    movement.registerMovementSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS);
+
+    // Register flower reproduction system.
+    simbio::systems::FlowerReproduction flowerReproduction;
+    flowerReproduction.registerFlowerReproductionSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, 
+        TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+
+    //Register Death system.
+    auto* death = new simbio::systems::Death();
+    death->registerDeathSystem(world, chunkGrid);
+    death->registerFlowerDeathSystem(world, chunkGrid);
+
     // Spawn Flowers across the grid.
-    Color flowerColor{ 0, 228, 48, 255 };
     std::random_device rd;
     std::mt19937 rng(rd());
     std::uniform_int_distribution<int> sizeDist(Flower::MIN_SIZE, Flower::MAX_SIZE);
     std::uniform_real_distribution<float> unitDist(0.0f, 1.0f);
-
+    std::exponential_distribution<float> reproductionTimerDist(1.0f / Flower::MIN_REPRODUCTION_TIMER);
+    
     for (float x = 0.0f; x < DISPLAY_WIDTH; x += FLOWER_SPAWN_BOX_SIZE) {
         for (float y = 0.0f; y < DISPLAY_HEIGHT; y += FLOWER_SPAWN_BOX_SIZE) {
             for (int i = 0; i < 5; ++i) {
@@ -91,44 +106,42 @@ int main() {
                 int chunkY = std::min((int)(spawnY / CHUNK_SIZE), CHUNK_ROWS - 1);
                 int chunk = chunkY * CHUNK_COLS + chunkX;
 
-                flecs::entity flower = world.entity()
-                    .set<Flower>(Flower{ sizeDist(rng), flowerColor })
-                    .set<Location>({ spawnX, spawnY, 0.0f, chunk });
+                int size = sizeDist(rng);
+                Location location{ spawnX, spawnY, 0.0f, chunk };
 
-                chunkGrid[chunk].push_back(flower.id());
+                flecs::entity flower = world.entity()
+                    .set<Location>(location)
+                    .set<Flower>(Flower{ size, Flower::FLOWER_COLOR });
+                
+                //TODO: Give reproduction system an observer like death system
+				int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / TIME_STEP);
+                using namespace simbio::systems;
+				FlowerReproduction::reproductionQueue[(FlowerReproduction::currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS]
+					.emplace_back(location, size, flower.id());
+
+                chunkGrid[chunk].emplace_back(location, size, flower.id());
             }
         }
     }
-
-    // Register MoveIntent and Movement systems.
-    simbio::systems::Movement movement;
-    movement.registerMoveIntentSystem(world);
-    movement.registerMovementSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS);
-
-    //Register Death system.
-    simbio::systems::Death death;
-    death.registerDeathSystem(world, chunkGrid);
-    death.registerFlowerDeathSystem(world, chunkGrid);
-
-    // Register flower reproduction system.
-    simbio::systems::FlowerReproduction flowerReproduction;
-    flowerReproduction.registerFlowerReproductionSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, 
-        TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
 
     InitWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "SimBio");
     SetTargetFPS(30);
 
     while (!WindowShouldClose()) {
+        if (GetKeyPressed() != 0) break;
+
         BeginDrawing();
         ClearBackground(BLACK);
 
         for (int i = 0; i < SIM_SPEED; ++i) world.progress(TIME_STEP);
+        printf("FPS: %d\n", GetFPS());
 
         draw(world);
 
         EndDrawing();
     }
 
+    delete death;
     return 0;
 }
 
@@ -215,7 +228,7 @@ void draw(flecs::world& world) {
 
 template <typename Brain>
 	void spawnOrganisms(simbio::organism::Organism<Brain>& organism, int count, float minX, float minY, float maxX, float maxY, 
-    std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols) {
+    std::vector<std::vector<simbio::organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols) {
     using namespace simbio::organism;
 
     std::random_device rd;
@@ -231,11 +244,13 @@ template <typename Brain>
         int chunkY = std::min((int)(y / chunkSize), chunkRows - 1);
         int chunk = chunkY * chunkCols + chunkX;
 
+        Location location{ x, y, 0.0f, chunk };
+
         flecs::entity e = organism.create()
-            .set<Location>({ x, y, 0.0f, chunk })
+            .set<Location>(location)
             .set<Velocity>({ 0.0f, 0.0f })
             .set<Status>({ 100.0f, 100.0f });
 
-        chunkGrid[chunk].push_back(e.id());
+        chunkGrid[chunk].emplace_back(location, 10, e.id());
     }
 }

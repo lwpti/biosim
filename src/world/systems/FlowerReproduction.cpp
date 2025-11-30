@@ -11,75 +11,95 @@ namespace simbio {
 		using namespace organism;
 
 		void FlowerReproduction::registerFlowerReproductionSystem(flecs::world& world, int worldWidth, int worldHeight,
-			float timeStep, std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows) {
+			float timeStep, std::vector<std::vector<organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows) {
 			this->worldWidth = worldWidth;
 			this->worldHeight = worldHeight;
 
 		 	static std::mt19937 rng{ std::random_device{}() };
 			static std::exponential_distribution<float> reproductionTimerDist{ 1.0f / plants::Flower::MIN_REPRODUCTION_TIMER };
-			static std::uniform_real_distribution<float> distanceDist{ -15.0f, 15.0f };
+			static std::uniform_real_distribution<float> distanceDist{ -10.0f, 10.0f };
 			static std::uniform_int_distribution<int> sizeChangeDist{ -1, 1 };
 
-			world.system<Flower, Location>("FlowerReproductionSystem")
-				.each([this, timeStep, &world, &chunkGrid, chunkSize, chunkCols, chunkRows]
-					(flecs::entity e, Flower& flower, const Location& location) {
-					if (flower.reproductionTimer > 0) {
-						--flower.reproductionTimer;
-					} else if (flower.reproductionTimer == 0) {
-						int childSize = std::clamp(flower.size + sizeChangeDist(rng), Flower::MIN_SIZE, Flower::MAX_SIZE);
+			world.system("FlowerReproductionSystem")
+				.run([this, timeStep, &world, &chunkGrid, chunkSize, chunkCols, chunkRows](flecs::iter& it) {
+				auto& bucket = reproductionQueue[currentReproductionTick];
+        		std::vector<SimpleEntity> flowers;
+        		flowers.swap(bucket);   
+				for (auto flower : flowers) {
+					flecs::entity e(world, flower.entityId);
+					if (!e.is_alive()) continue;
+					int childSize = std::clamp(flower.size + sizeChangeDist(rng), Flower::MIN_SIZE, Flower::MAX_SIZE);
+					float childRadius = childSize * 0.5f;
+					float parentRadius = flower.size * 0.5f;
+					float sizeOffset = childRadius + parentRadius + 2.0f;
+					float xOffset = distanceDist(rng);
+					float yOffset = distanceDist(rng);
+				
+					float x = flower.location.x + std::copysign(sizeOffset, xOffset) + xOffset;
+					float y = flower.location.y + std::copysign(sizeOffset, yOffset) + yOffset;
+					x = x > this->worldWidth ? 0.0f : x;
+					y = y > this->worldHeight ? 0.0f : y;
+					x = x < 0.0f ? this->worldWidth - 0.0001f : x;
+					y = y < 0.0f ? this->worldHeight - 0.0001f : y;
 
-						float x = std::clamp(location.x + distanceDist(rng), 0.0f, (float)this->worldWidth - 0.0001f);
-						float y = std::clamp(location.y + distanceDist(rng), 0.0f, (float)this->worldHeight - 0.0001f);
+					int chunkX = (int)(x / chunkSize);
+					int chunkY = (int)(y / chunkSize);
+					int chunk = chunkY * chunkCols + chunkX;
+					// This is a temporary optimization which limits flower population density.
+					if (chunkGrid[chunk].size() >= 3) {
+						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
+						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
+						continue;
+					}
 
-						int chunkX = (int)(x / chunkSize);
-						int chunkY = (int)(y / chunkSize);
-						int chunk = chunkY * chunkCols + chunkX;
+					bool overlaps = false;
+					for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
+						int adjX = chunkY + dy;
+						adjX = adjX < 0 ? chunkRows - 1 : adjX;
+						adjX = adjX >= chunkRows ? 0 : adjX;
 
-						bool overlaps = false;
-						for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
-							int adjX = chunkY + dy;
-							adjX = adjX < 0 ? chunkRows - 1 : adjX;
-							adjX = adjX >= chunkRows ? 0 : adjX;
+						for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
+							int adjY = chunkX + dx;
+							adjY = adjY < 0 ? chunkCols - 1 : adjY;
+							adjY = adjY >= chunkCols ? 0 : adjY;
 
-							for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
-								int adjY = chunkX + dx;
-								adjY = adjY < 0 ? chunkCols - 1 : adjY;
-								adjY = adjY >= chunkCols ? 0 : adjY;
+							auto& bucket = chunkGrid[adjX * chunkCols + adjY];
+							for (int i = 0; i < bucket.size(); ++i) {
+								const Location* adjLocation = &bucket[i].location;
+								const int* adjSize = &bucket[i].size;
 
-								auto& bucket = chunkGrid[adjX * chunkCols + adjY];
-								for (int i = 0; i < bucket.size(); ++i) {
-									flecs::entity adjEntity(world, bucket[i]);
+								float distanceX = adjLocation->x - x;
+								float distanceY = adjLocation->y - y;
+								float minDistance = childRadius + 2.0f + *adjSize * 0.5f;
 
-									const Flower* adjFlower = adjEntity.try_get<Flower>();
-									if (!adjFlower) continue;
-
-									const Location* adjLocation = adjEntity.try_get<Location>();
-									if (!adjLocation) continue;
-
-									float distanceX = adjLocation->x - x;
-									float distanceY = adjLocation->y - y;
-									float minDistance = childSize * 0.5f + 2.0f + adjFlower->size * 0.5f;
-
-									if (distanceX * distanceX + distanceY * distanceY <= minDistance * minDistance) {
-										overlaps = true;
-										break;
-									}
+								if (distanceX * distanceX + distanceY * distanceY <= minDistance * minDistance) {
+									overlaps = true;
+									break;
 								}
 							}
 						}
-
-						if (!overlaps) {
-							flecs::entity child = world.entity()
-								.set<Flower>(Flower{ childSize, flower.color })
-								.set<Location>({ x, y, 0.0f, chunk });
-
-							chunkGrid[chunk].push_back(child.id());
-						}
-
-						flower.reproductionTimer = (int)std::ceil((Flower::MIN_REPRODUCTION_TIMER + reproductionTimerDist(rng)) / timeStep);
 					}
-				});
-		}
 
+					if (!overlaps) {
+						Location location = { x, y, 0.0f, chunk };
+
+						flecs::entity child = world.entity()
+							.set<Flower>(Flower{ childSize, Flower::FLOWER_COLOR })
+							.set<Location>(location);
+
+						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
+						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS]
+							.emplace_back(location, childSize, child.id());
+
+						chunkGrid[chunk].emplace_back(location, childSize, child.id());
+					}
+						
+					int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
+					reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
+				}
+
+				currentReproductionTick = (currentReproductionTick + 1) % Flower::MAX_REPRODUCTION_TICKS;
+			});		
+		}
 	}
 }

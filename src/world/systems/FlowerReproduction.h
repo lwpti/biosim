@@ -4,6 +4,8 @@
 #include <random>
 #include "plants/Flower.h"
 #include <vector>
+#include "Organism.h"
+#include <array>
 
 namespace simbio {
 	namespace systems {
@@ -21,7 +23,10 @@ namespace simbio {
 			/// <param name="chunkCols">Number of columns in the chunk grid</param>
 			/// <param name="chunkRows">Number of rows in the chunk grid</param>
 			void registerFlowerReproductionSystem(flecs::world& world, int worldWidth, int worldHeight, float timeStep, 
-				std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows);
+				std::vector<std::vector<organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows);
+
+			static inline std::array<std::vector<organism::SimpleEntity>, plants::Flower::MAX_REPRODUCTION_TICKS> reproductionQueue{};
+			static inline int currentReproductionTick = 0;
 
 		private:
 			int worldWidth;

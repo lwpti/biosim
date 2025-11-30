@@ -33,7 +33,7 @@ namespace simbio {
         }
 
         void Movement::registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight, 
-				float dt, std::vector<std::vector<flecs::entity_t>>& chunkGrid, int chunkSize, int chunkCols) {
+				float dt, std::vector<std::vector<organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols) {
             world.system<Move, Location, Velocity, Legs, Status>("MovementSystem")
                 .each([&, worldWidth, worldHeight, dt, chunkSize, chunkCols]
                     (flecs::entity e, Move& move, Location& location, Velocity& v, const Legs& legs, Status& status)
@@ -86,13 +86,13 @@ namespace simbio {
                         if (newChunk != location.chunk) {
                             auto& bucket = chunkGrid[location.chunk];
                             for (int i = 0; i < bucket.size(); ++i) {
-                                if (bucket[i] == e.id()) {
+                                if (bucket[i].entityId == e.id()) {
                                     bucket[i] = bucket.back();
                                     bucket.pop_back();
                                     break;
                                 }
                             }
-                            chunkGrid[newChunk].push_back(e.id());
+                            chunkGrid[newChunk].emplace_back(location, 10, e.id());
                             location.chunk = newChunk;
                         }
 
