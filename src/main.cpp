@@ -7,6 +7,8 @@
 #include "world/systems/Movement.h"
 #include "world/systems/Death.h"
 #include "world/systems/FlowerReproduction.h"
+#include "world/systems/Eating.h"
+#include "organism/percepts/Touch.h"
 #include <cmath>
 #include <random>
 #include "data/Status.h"
@@ -85,6 +87,11 @@ int main() {
     flowerReproduction.registerFlowerReproductionSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, 
         TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
 
+    // Register eating / grabbing systems.
+    simbio::systems::Eating eating;
+    eating.registerGrabbingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+    eating.registerBitingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+
     //Register Death system.
     auto* death = new simbio::systems::Death();
     death->registerDeathSystem(world, chunkGrid);
@@ -97,32 +104,84 @@ int main() {
     std::uniform_real_distribution<float> unitDist(0.0f, 1.0f);
     std::exponential_distribution<float> reproductionTimerDist(1.0f / Flower::MIN_REPRODUCTION_TIMER);
     
+
+    // Making sure the flowers don't overlap
     for (float x = 0.0f; x < DISPLAY_WIDTH; x += FLOWER_SPAWN_BOX_SIZE) {
         for (float y = 0.0f; y < DISPLAY_HEIGHT; y += FLOWER_SPAWN_BOX_SIZE) {
-            for (int i = 0; i < 5; ++i) {
+            int spawned = 0;
+            int attempts = 0;
+            const int MAX_ATTEMPTS = 50; // avoid infinite loops if area gets crowded
+
+            while (spawned < 5 && attempts < MAX_ATTEMPTS) {
+                ++attempts;
+
                 float spawnX = x + unitDist(rng) * FLOWER_SPAWN_BOX_SIZE;
                 float spawnY = y + unitDist(rng) * FLOWER_SPAWN_BOX_SIZE;
+
                 int chunkX = std::min((int)(spawnX / CHUNK_SIZE), CHUNK_COLS - 1);
                 int chunkY = std::min((int)(spawnY / CHUNK_SIZE), CHUNK_ROWS - 1);
                 int chunk = chunkY * CHUNK_COLS + chunkX;
 
                 int size = sizeDist(rng);
+                float radius = size * 0.5f;
+
+                bool overlaps = false;
+
+                // Check this chunk and its 8 neighbors for overlapping flowers
+                for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
+                    int adjChunkY = chunkY + dy;
+                    if (adjChunkY < 0) adjChunkY = CHUNK_ROWS - 1;
+                    if (adjChunkY >= CHUNK_ROWS) adjChunkY = 0;
+
+                    for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
+                        int adjChunkX = chunkX + dx;
+                        if (adjChunkX < 0) adjChunkX = CHUNK_COLS - 1;
+                        if (adjChunkX >= CHUNK_COLS) adjChunkX = 0;
+
+                        auto& bucket = chunkGrid[adjChunkY * CHUNK_COLS + adjChunkX];
+                        for (const auto& entry : bucket) {
+                            // Only avoid overlapping other flowers; organisms can overlap plants
+                            flecs::entity adjEntity(world, entry.entityId);
+                            if (!adjEntity.is_alive()) continue;
+                            if (!adjEntity.has<Flower>()) continue;
+
+                            float adjRadius = entry.size * 0.5f;
+                            float dxPos = entry.location.x - spawnX;
+                            float dyPos = entry.location.y - spawnY;
+                            float minDist = radius + adjRadius + 2.0f; // small gap
+
+                            if (dxPos * dxPos + dyPos * dyPos <= minDist * minDist) {
+                                overlaps = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (overlaps) {
+                    // Try again with a different random point
+                    continue;
+                }
+
+                // No overlap -> commit the flower
                 Location location{ spawnX, spawnY, 0.0f, chunk };
 
                 flecs::entity flower = world.entity()
                     .set<Location>(location)
                     .set<Flower>(Flower{ size, Flower::FLOWER_COLOR });
-                
-                //TODO: Give reproduction system an observer like death system
-				int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / TIME_STEP);
+
+                int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / TIME_STEP);
                 using namespace simbio::systems;
-				FlowerReproduction::reproductionQueue[(FlowerReproduction::currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS]
-					.emplace_back(location, size, flower.id());
+                FlowerReproduction::reproductionQueue[
+                    (FlowerReproduction::currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS
+                ].emplace_back(location, size, flower.id());
 
                 chunkGrid[chunk].emplace_back(location, size, flower.id());
+                ++spawned;
             }
         }
     }
+
 
     InitWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "SimBio");
     //SetTargetFPS(30);
