@@ -4,7 +4,7 @@
 #include "data/Location.h"
 #include "data/Velocity.h"
 #include "raymath.h"
-#include <data/Status.h>
+#include "data/Status.h"
 #include <algorithm>
 
 namespace simbio {

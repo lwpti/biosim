@@ -11,8 +11,8 @@
 #include "organism/percepts/Touch.h"
 #include <cmath>
 #include <random>
-#include "data/Status.h"
-#include "plants/Flower.h"
+#include "organism/data/Status.h"
+#include "world/plants/Flower.h"
 #include <vector>
 #include <type_traits>
 #include <utility>

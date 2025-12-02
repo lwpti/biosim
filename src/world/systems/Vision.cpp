@@ -10,12 +10,7 @@ namespace simbio {
             int chunkCols,
             int chunkRows)
         {
-            // no-op stub for now
-            (void)world;
-            (void)chunkGrid;
-            (void)chunkSize;
-            (void)chunkCols;
-            (void)chunkRows;
+
         }
 
     }
