@@ -10,7 +10,7 @@ namespace eater {
 	flecs::entity Eater::create() const {
 		return world.entity()
 			.add<EaterBrain>()
-			.set<Body>({ 10, { 230, 41, 55 } })
+			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10 });
 	}
@@ -18,7 +18,7 @@ namespace eater {
 	flecs::entity Eater::create(const flecs::entity& parent) const {
 		return world.entity()
 			.add<EaterBrain>()
-			.set<Body>({ 10, { 230, 41, 55 }  })
+			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10 });
 	}
@@ -26,7 +26,7 @@ namespace eater {
 	flecs::entity Eater::create(const flecs::entity& mother, const flecs::entity& father) const {
 		return world.entity()
 			.add<EaterBrain>()
-			.set<Body>({ 10, { 230, 41, 55 }  })
+			.set<Body>({ 10})
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10 });
 	}

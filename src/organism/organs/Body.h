@@ -10,7 +10,6 @@ namespace simbio {
 		/// </summary>
 		struct Body {
 			float size;
-			Color color;
 		};
 	}
 }

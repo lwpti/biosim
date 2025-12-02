@@ -5,7 +5,7 @@ namespace simbio {
 
         void Vision::registerVisionSystem(
             flecs::world& world,
-            std::vector<std::vector<organism::SimpleEntity>>& chunkGrid,
+            std::vector<std::vector<organism::Entity>>& chunkGrid,
             int chunkSize,
             int chunkCols,
             int chunkRows)

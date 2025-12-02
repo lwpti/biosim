@@ -5,13 +5,24 @@
 #include <type_traits>
 #include "data/Location.h"
 #include "organs/Organs.h"
+#include "data/Status.h"
+#include "data/Color.h"
+#include "data/Velocity.h"
+#include <algorithm>
 
 namespace simbio {
 	namespace organism {
-		struct SimpleEntity {
+		struct Entity {
+			flecs::entity_t flecsID;
+			Color color;
 			Location location;
-			int size;
-			flecs::entity_t entityId;
+			Status status;
+			Velocity velocity;
+			Organs organs;
+
+			float getSize() const {
+				return (std::max)(organs.body.size, organs.flower.size) + (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
+			}
 		};
 
 		// This needs to be verified. Is this enough (or too much) to ensure T will work with flecs?

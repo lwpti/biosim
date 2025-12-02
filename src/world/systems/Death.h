@@ -16,7 +16,7 @@ namespace simbio {
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
 			/// <param name="chunkGrid">Reference to the chunk grid to remove dead organisms from</param>
-			void registerDeathSystem(flecs::world& world, std::vector<std::vector<organism::SimpleEntity>>& chunkGrid);
+			void registerDeathSystem(flecs::world& world, std::vector<std::vector<organism::Entity>>& chunkGrid);
 
 			/// <summary>
 			/// Registers the FlowerDeath flecs system. 
@@ -26,12 +26,12 @@ namespace simbio {
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
 			/// <param name="chunkGrid">Reference to the chunk grid to remove dead flowers from</param>
-			void registerFlowerDeathSystem(flecs::world& world, std::vector<std::vector<organism::SimpleEntity>>& chunkGrid);
+			void registerFlowerDeathSystem(flecs::world& world, std::vector<std::vector<organism::Entity>>& chunkGrid);
 
 		private:
 			constexpr static float MIN_DEATH_TIMER = 900.0f, DEATH_TIMER_SPREAD = 900.0f;
 			constexpr static int MAX_DEATH_TICKS = 4.0f * (MIN_DEATH_TIMER + DEATH_TIMER_SPREAD) / 0.1f;
-			std::array<std::vector<organism::SimpleEntity>, MAX_DEATH_TICKS> deathQueue;
+			std::array<std::vector<organism::Entity>, MAX_DEATH_TICKS> deathQueue;
 			int deathTick = 0;
 		};
 	}

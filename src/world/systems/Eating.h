@@ -12,7 +12,7 @@ namespace simbio {
             /// Register a system that processes ArmsIntent and creates Holding/Grabbed relations
             void registerGrabbingSystem(
                 flecs::world& world,
-                std::vector<std::vector<organism::SimpleEntity>>& chunkGrid,
+                std::vector<std::vector<organism::Entity>>& chunkGrid,
                 int chunkSize,
                 int chunkCols,
                 int chunkRows);
@@ -20,7 +20,7 @@ namespace simbio {
             /// Register a system that processes BiteIntent and applies damage / eats plants
             void registerBitingSystem(
                 flecs::world& world,
-                std::vector<std::vector<organism::SimpleEntity>>& chunkGrid,
+                std::vector<std::vector<organism::Entity>>& chunkGrid,
                 int chunkSize,
                 int chunkCols,
                 int chunkRows);
