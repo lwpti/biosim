@@ -16,7 +16,7 @@ namespace simbio {
             world.system<Status, Location>("DeathSystem")
                 .each([&](flecs::entity e, const Status& status, const Location& location)
                     {
-                        if (status.energy < 0.0f || status.health < 0.0f) {
+                        if (status.energy <= 0.0f || status.health <= 0.0f) {
                             auto& bucket = chunkGrid[location.chunk];
                             for (int i = 0; i < bucket.size(); ++i) {
                                 if (bucket[i].flecsID == e.id()) {

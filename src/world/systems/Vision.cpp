@@ -16,6 +16,7 @@ namespace simbio {
         organism::Sight Vision::computeSightPercept(flecs::entity entity, 
             const organism::Location& location, const organism::Eyes eyes) {
             simbio::organism::Sight sightPercept;
+            if (eyes.size == 0) return sightPercept;
 
             float entityX = location.x;
             float entityY = location.y;

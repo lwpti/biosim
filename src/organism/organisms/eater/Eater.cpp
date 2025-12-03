@@ -12,7 +12,8 @@ namespace eater {
 			.add<EaterBrain>()
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
-			.set<Mouth>({ 10 });
+			.set<Mouth>({ 10 })
+			.set<simbio::organism::Color>({ 149, 242, 21});
 	}
 
 	flecs::entity Eater::create(const flecs::entity& parent) const {
@@ -20,7 +21,8 @@ namespace eater {
 			.add<EaterBrain>()
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
-			.set<Mouth>({ 10 });
+			.set<Mouth>({ 10 })
+			.set<simbio::organism::Color>({ 149, 242, 21});
 	}
 
 	flecs::entity Eater::create(const flecs::entity& mother, const flecs::entity& father) const {
@@ -28,7 +30,8 @@ namespace eater {
 			.add<EaterBrain>()
 			.set<Body>({ 10})
 			.set<Legs>({ 10 })
-			.set<Mouth>({ 10 });
+			.set<Mouth>({ 10 })
+			.set<simbio::organism::Color>({ 149, 242, 21});
 	}
 
 	// Currently, the Mover brain just accelerates in a random direction.

@@ -47,6 +47,7 @@ namespace simbio {
 					// This is a temporary optimization which limits flower population density.
 					if (chunkGrid[chunk].size() >= 3) {
 						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
+						// Technically, this makes low timers more common?
 						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
 						continue;
 					}
@@ -85,7 +86,8 @@ namespace simbio {
 							.set<Location>(location);
 
 						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
-						Entity e = Entity{ .flecsID = child.id(), .location = location, .organs = Organs{ .flower = Flower { childSize } } };
+						Entity e = Entity{ .flecsID = child.id(), .color = Flower::FLOWER_COLOR, 
+							.location = location, .organs = Organs{ .flower = Flower { childSize } } };
 						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(e);
 
 						chunkGrid[chunk].push_back(e);

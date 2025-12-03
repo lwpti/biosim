@@ -51,6 +51,7 @@ int main() {
 
     flecs::world world;
 
+    // Do not enable; will break EVERYTHING
     //world.set_threads(std::thread::hardware_concurrency() - 1);
 
     // Currently, displayWidth and displayHeight must be multiples of FLOWER_SPAWN_BOX_SIZE for flower spawning...
@@ -206,6 +207,7 @@ int main() {
         EndDrawing();
     }
 
+    CloseWindow();
     delete death;
     return 0;
 }
