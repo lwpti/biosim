@@ -15,7 +15,7 @@ add_executable(SimBio
     organism/organisms/eater/Eater.cpp 
     organism/organisms/mover/Mover.cpp
     world/systems/Eating.cpp 
-    world/systems/Vision.cpp)
+    world/systems/Vision.cpp
 )
 
 target_compile_definitions(SimBio PRIVATE FLECS_CPP_NO_ENUM_REFLECTION)
