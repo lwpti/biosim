@@ -23,9 +23,9 @@ namespace simbio {
                         float a = std::sqrt(ax * ax + ay * ay);
                         if (a > legs.size) {
                             float scale = legs.size / a;
+                            a = legs.size;
 							ax *= scale;
 							ay *= scale;
-                            a = legs.size;
                         }
 
                         e.set<Move>({ { a, ax, ay }, std::clamp(legsIntent.yaw, -maxYaw, maxYaw) });
@@ -73,10 +73,11 @@ namespace simbio {
 
                         if (move.a.magnitude > 0.6f * legs.size) {
 							float overA = move.a.magnitude - 0.6f * legs.size;
-							status.energy -= (0.6f * legs.size + (overA * overA)) / 100.0f;
+							status.energy -= (0.6f * legs.size + (overA * overA)) / 10.0f * dt;
                         }
                         else {
-                            status.energy -= move.a.magnitude / 100.0f;
+                            // Max A = legs.size
+                            status.energy -= move.a.magnitude / 10.0f * dt;
                         }
                         
                         int newChunk = (int)(location.y / chunkSize) * chunkCols + (int)(location.x / chunkSize);

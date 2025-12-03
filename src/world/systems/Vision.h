@@ -5,6 +5,7 @@
 #include "organs/Eyes.h"
 #include "percepts/Sight.h"
 #include "Entity.h"
+#include "data/Status.h"
 
 namespace simbio {
     namespace systems {
@@ -13,8 +14,8 @@ namespace simbio {
             static void registerVisionSystem(std::vector<std::vector<organism::Entity>>& chunkGrid, 
                 int chunkSize, int chunkCols, int chunkRows);
             
-            static organism::Sight computeSightPercept(flecs::entity entity, 
-                const organism::Location& location, const organism::Eyes eyes);    
+            static organism::Sight computeSightPercept(flecs::entity entity, float dt,
+                const organism::Location& location, const organism::Eyes eyes, organism::Status status);    
 
             inline static std::vector<std::vector<organism::Entity>>* chunkGrid;
             inline static int chunkSize = 0;

@@ -89,7 +89,8 @@ namespace simbio {
 							if (const Mouth* mouth = e.try_get<Mouth>()) organs.mouth = *mouth;
 
 							Percepts percepts;
-							percepts.sight = simbio::systems::Vision::computeSightPercept(e, e.get<Location>(), organs.eyes);
+							// Hard coded dt :(
+							percepts.sight = simbio::systems::Vision::computeSightPercept(e, 0.1, e.get<Location>(), organs.eyes, e.get<Status>());
 
 							Intents intents;
 							

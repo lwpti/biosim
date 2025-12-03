@@ -2,6 +2,7 @@
 #include "percepts/Sight.h"
 #include "data/Location.h"
 #include "Entity.h"
+#include "data/Status.h"
 
 namespace simbio {
     namespace systems {
@@ -13,9 +14,12 @@ namespace simbio {
             Vision::chunkRows = chunkRows;      
         }
 
-        organism::Sight Vision::computeSightPercept(flecs::entity entity, 
-            const organism::Location& location, const organism::Eyes eyes) {
+        organism::Sight Vision::computeSightPercept(flecs::entity entity, float dt,
+            const organism::Location& location, const organism::Eyes eyes, organism::Status status) {
             simbio::organism::Sight sightPercept;
+            // I am temporarily putting a drain on all entity energy here
+            // This should be in its own system like "Hunger"
+            status.energy -= (0.005f + eyes.size * 0.05) * dt;
             if (eyes.size == 0) return sightPercept;
 
             float entityX = location.x;
