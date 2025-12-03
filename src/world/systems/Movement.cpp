@@ -87,6 +87,7 @@ namespace simbio {
                                 bucket[i].location = location;
                                 bucket[i].velocity = v;
                                 if (newChunk != location.chunk) {
+                                    location.chunk = newChunk;
                                     bucket[i].location.chunk = newChunk;
                                     chunkGrid[newChunk].push_back(bucket[i]);
                                     bucket[i] = bucket.back();

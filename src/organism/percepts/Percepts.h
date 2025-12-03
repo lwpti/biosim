@@ -12,6 +12,7 @@ namespace simbio {
         /// </summary>
         struct Percepts {
             std::optional<Sight> sight;
+            std::optional<Sound> sound;
         };
     }
 }

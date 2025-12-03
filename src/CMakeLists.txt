@@ -10,6 +10,7 @@ add_executable(SimBio
     world/systems/Death.cpp
     world/systems/FlowerReproduction.cpp
     world/systems/Eating.cpp
+    world/systems/Hearing.cpp
     world/systems/Vision.cpp
 
     organism/organisms/eater/Eater.cpp 

@@ -79,8 +79,8 @@ namespace simbio {
             int endChunkY = std::floor(maxY / Vision::chunkSize);
             int startChunkX = std::floor(minX / Vision::chunkSize);
             int endChunkX = std::floor(maxX / Vision::chunkSize);
-            for (int chunkY = startChunkY; chunkY <= endChunkY; chunkY++) {
-                for (int chunkX = startChunkX; chunkX <= endChunkX; chunkX++) {
+            for (int chunkY = startChunkY; chunkY <= endChunkY; ++chunkY) {
+                for (int chunkX = startChunkX; chunkX <= endChunkX; ++chunkX) {
                     int cX = chunkX;
                     int cY = chunkY;
                     if (cX < 0) cX += chunkCols;

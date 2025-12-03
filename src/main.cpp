@@ -8,6 +8,7 @@
 #include "world/systems/Death.h"
 #include "world/systems/FlowerReproduction.h"
 #include "world/systems/Eating.h"
+#include "world/systems/Hearing.h"
 #include "organism/percepts/Touch.h"
 #include <cmath>
 #include <random>
@@ -98,6 +99,9 @@ int main() {
     auto* death = new simbio::systems::Death();
     death->registerDeathSystem(world, chunkGrid);
     death->registerFlowerDeathSystem(world, chunkGrid);
+
+    //Register Hearing system.
+    simbio::systems::Hearing::registerHearingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS, TIME_STEP);
 
     //Register Vision system.
     simbio::systems::Vision::registerVisionSystem(chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
@@ -192,9 +196,9 @@ int main() {
 
     InitWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "SimBio");
     //SetTargetFPS(30);
+    SetExitKey(KEY_SPACE);
 
     while (!WindowShouldClose()) {
-        if (GetKeyPressed() != 0) break;
 
         BeginDrawing();
         ClearBackground(::Color{0, 0, 0, 255});

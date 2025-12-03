@@ -91,6 +91,10 @@ namespace simbio {
 							Percepts percepts;
 							// Hard coded dt :(
 							percepts.sight = simbio::systems::Vision::computeSightPercept(e, 0.1, e.get<Location>(), organs.eyes, e.get<Status>());
+							if (const Sound* sound = e.try_get<Sound>()) {
+								percepts.sound = *sound;
+								e.remove<Sound>();
+							}
 
 							Intents intents;
 							
