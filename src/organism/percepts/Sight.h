@@ -6,7 +6,6 @@
 #include "data/Status.h"
 #include "data/Color.h"
 #include "data/Velocity.h"
-#include "Organism.h"
 #include <vector>
 #include <cmath>
 #include "Entity.h"

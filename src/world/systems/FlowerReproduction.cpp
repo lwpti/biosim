@@ -85,7 +85,7 @@ namespace simbio {
 							.set<Location>(location);
 
 						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
-						Entity e = Entity{ .flecsID = child.id(), .location = location, .organs = Organs{ .flower = childSize } };
+						Entity e = Entity{ .flecsID = child.id(), .location = location, .organs = Organs{ .flower = Flower { childSize } } };
 						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(e);
 
 						chunkGrid[chunk].push_back(e);

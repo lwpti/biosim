@@ -11,6 +11,7 @@
 #include <algorithm>
 #include "percepts/Percepts.h"
 #include "Entity.h"
+#include "systems/Vision.h"
 
 namespace simbio {
 	namespace organism {
@@ -88,7 +89,7 @@ namespace simbio {
 							if (const Mouth* mouth = e.try_get<Mouth>()) organs.mouth = *mouth;
 
 							Percepts percepts;
-							if (const Sight* sight = e.try_get<Sight>()) percepts.sight = *sight; else percepts.sight = std::nullopt;
+							percepts.sight = simbio::systems::Vision::computeSightPercept(e, e.get<Location>(), organs.eyes);
 
 							Intents intents;
 							

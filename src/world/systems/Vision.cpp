@@ -6,10 +6,11 @@
 namespace simbio {
     namespace systems {
         void Vision::registerVisionSystem(std::vector<std::vector<organism::Entity>>& chunkGrid, 
-            int chunkSize, int chunkCols) {
+            int chunkSize, int chunkCols, int chunkRows) {
             Vision::chunkGrid = &chunkGrid;
             Vision::chunkSize = chunkSize;
-            Vision::chunkCols = chunkCols;        
+            Vision::chunkCols = chunkCols;
+            Vision::chunkRows = chunkRows;      
         }
 
         organism::Sight Vision::computeSightPercept(flecs::entity entity, 
@@ -18,8 +19,7 @@ namespace simbio {
 
             float entityX = location.x;
             float entityY = location.y;
-
-            float yaw = location.yaw * (PI / 180.0f);
+            float yaw = location.yaw;
             float halfFOV = Vision::FOV * (PI / 180.0f) * 0.5f;
             float viewDist = eyes.size * Vision::RANGE_MULT;
 
@@ -71,16 +71,21 @@ namespace simbio {
             
             for (int chunkY = minY / Vision::chunkSize; chunkY <= maxY / Vision::chunkSize; chunkY++) {
                 for (int chunkX = minX / Vision::chunkSize; chunkX <= maxX / Vision::chunkSize; chunkX++) {
+                    while (chunkX >= chunkCols) chunkX -= chunkCols;
+                    while (chunkX < 0) chunkX += chunkCols;
+                    while (chunkY >= chunkRows) chunkX -= chunkRows;
+                    while (chunkY < 0) chunkX += chunkRows;
                     auto& bucket = (*Vision::chunkGrid)[chunkY * Vision::chunkCols + chunkX];
-                    for (auto& entity : bucket) {
-                        float distX = entity.location.x - entityX;
-                        float distY = entity.location.y - entityY;
+                    for (auto& targetEntity : bucket) {
+                        if (targetEntity.flecsID == entity.id()) continue;
+                        float distX = targetEntity.location.x - entityX;
+                        float distY = targetEntity.location.y - entityY;
                         float dist2 = distX * distX + distY * distY;
                         if (dist2 > viewDist * viewDist) continue;
                         float angle = std::atan2(distY, distX) - yaw;
                         if (angle > PI || angle <= -PI) angle = std::atan2(std::sin(angle), std::cos(angle));
                         if (std::fabs(angle) > halfFOV) continue;
-                        sightPercept.visibleEntities.push_back(entity);
+                        sightPercept.visibleEntities.push_back(targetEntity);
                     }
                 }
             }

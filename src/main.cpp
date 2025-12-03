@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <thread>
 #include "Entity.h"
+#include "systems/Vision.h"
 
 /// <summary>
 /// Draws all organisms and plants in the flecs world.
@@ -96,6 +97,9 @@ int main() {
     auto* death = new simbio::systems::Death();
     death->registerDeathSystem(world, chunkGrid);
     death->registerFlowerDeathSystem(world, chunkGrid);
+
+    //Register Vision system.
+    simbio::systems::Vision::registerVisionSystem(chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
 
     // Spawn Flowers across the grid.
     std::random_device rd;
@@ -174,7 +178,7 @@ int main() {
                 int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / TIME_STEP);
                 using namespace simbio::systems;
                 Entity e{ .flecsID = flower.id(), .color = Flower::FLOWER_COLOR, .location = location, 
-                    .organs = Organs{ .flower = (float)size } };
+                    .organs = Organs{ .flower = Flower{ (float)size } } };
                 FlowerReproduction::reproductionQueue
                     [(FlowerReproduction::currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(e);
 
