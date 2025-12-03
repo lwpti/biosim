@@ -9,22 +9,11 @@
 #include "data/Color.h"
 #include "data/Velocity.h"
 #include <algorithm>
+#include "percepts/Percepts.h"
+#include "Entity.h"
 
 namespace simbio {
 	namespace organism {
-		struct Entity {
-			flecs::entity_t flecsID;
-			Color color;
-			Location location;
-			Status status;
-			Velocity velocity;
-			Organs organs;
-
-			float getSize() const {
-				return (std::max)(organs.body.size, organs.flower.size) + (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
-			}
-		};
-
 		// This needs to be verified. Is this enough (or too much) to ensure T will work with flecs?
 		template <typename T>
 		concept FlecsComponent =
@@ -65,15 +54,6 @@ namespace simbio {
 			/// <summary>
 			/// Convenient structure for think method
 			/// </summary>
-			struct Organs {
-				std::optional<Body> body;
-				std::optional<Legs> legs;
-				std::optional<Mouth> mouth;
-			};
-			
-			/// <summary>
-			/// Convenient structure for think method
-			/// </summary>
 			struct Intents {
 				std::optional<LegsIntent> legs;
 				std::optional<BiteIntent> bite;
@@ -85,7 +65,7 @@ namespace simbio {
 			/// </summary>
 			/// <param name="organs">All the organ components from the organism flecs entity</param>
 			/// <param name="intents">Intent components to be added to the flecs entity</param>
-			virtual void think(const Organs& organs, Intents& intents) const = 0;	// Percepts should be parameter too
+			virtual void think(const Percepts& percepts, const Organs& organs, Intents& intents) const = 0;	// Percepts should be parameter too
 
 			/// <summary>
 			/// Registers Brain flecs systems. The behavior of these systems is defined by the think methods of
@@ -99,13 +79,20 @@ namespace simbio {
 					.each([this](flecs::entity e, const Brain& brain) 
 						{
 							Organs organs;
+							if (const Arms* arms = e.try_get<Arms>()) organs.arms = *arms;
 							if (const Body* body = e.try_get<Body>()) organs.body = *body;
+							if (const Ears* ears = e.try_get<Ears>()) organs.ears = *ears;
+							if (const Eyes* eyes = e.try_get<Eyes>()) organs.eyes = *eyes;
+							if (const Flower* flower = e.try_get<Flower>()) organs.flower = *flower;
 							if (const Legs* legs = e.try_get<Legs>()) organs.legs = *legs;
 							if (const Mouth* mouth = e.try_get<Mouth>()) organs.mouth = *mouth;
 
+							Percepts percepts;
+							if (const Sight* sight = e.try_get<Sight>()) percepts.sight = *sight; else percepts.sight = std::nullopt;
+
 							Intents intents;
 							
-							this->think(organs, intents);
+							this->think(percepts, organs, intents);
 							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 							if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
 						});

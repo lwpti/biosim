@@ -4,6 +4,7 @@
 #include <vector>
 #include "Organism.h"
 #include <array>
+#include "Entity.h"
 
 namespace simbio {
 	namespace systems {

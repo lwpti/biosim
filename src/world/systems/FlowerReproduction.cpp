@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include "data/Location.h"
+#include "Entity.h"
 
 namespace simbio {
 	namespace systems {

@@ -6,6 +6,7 @@
 #include "Organism.h"
 #include <array>
 #include "organs/Flower.h"
+#include "Entity.h"
 
 namespace simbio {
 	namespace systems {

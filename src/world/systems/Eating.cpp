@@ -9,6 +9,7 @@
 #include "organs/Arms.h"
 #include "organs/Mouth.h"
 #include "percepts/Touch.h"
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {

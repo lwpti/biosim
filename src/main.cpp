@@ -18,6 +18,7 @@
 #include <concepts>
 #include <algorithm>
 #include <thread>
+#include "Entity.h"
 
 /// <summary>
 /// Draws all organisms and plants in the flecs world.
@@ -46,9 +47,7 @@ void spawnOrganisms(simbio::organism::Organism<Brain>& organism, int count, floa
 int main() {
     using namespace simbio::organism;
 
-    printf("Begin\n");
     flecs::world world;
-    printf("2\n");
 
     //world.set_threads(std::thread::hardware_concurrency() - 1);
 
@@ -321,7 +320,7 @@ template <typename Brain>
 
         chunkGrid[chunk].emplace_back(
             e.id(), 
-            e.get<simbio::organism::Color>(),
+            e.has<simbio::organism::Color>() ? e.get<simbio::organism::Color>() : simbio::organism::Color{ 255, 255, 255 },
             e.get<Location>(),
             e.get<Status>(),
             e.get<Velocity>(),

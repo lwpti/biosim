@@ -6,6 +6,7 @@
 #include "raymath.h"
 #include <data/Status.h>
 #include <algorithm>
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {
@@ -66,7 +67,9 @@ namespace simbio {
                         location.y = location.y >= worldHeight ? 0.0f : location.y;
                         location.y = location.y < 0.0f ? worldHeight - 0.0001f : location.y;
 
-                        location.yaw += move.yaw;
+                        location.yaw += move.yaw * dt;
+                        if (location.yaw > PI || location.yaw <= -PI) 
+                            location.yaw = std::atan2(std::sin(location.yaw), std::cos(location.yaw));
 
                         if (move.a.magnitude > 0.6f * legs.size) {
 							float overA = move.a.magnitude - 0.6f * legs.size;

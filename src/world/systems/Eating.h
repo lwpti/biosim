@@ -3,6 +3,7 @@
 #include "flecs.h"
 #include <vector>
 #include "Organism.h"
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {

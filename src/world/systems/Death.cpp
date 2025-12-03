@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <cmath>
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {
@@ -36,8 +37,8 @@ namespace simbio {
             world.observer<Flower, const Location>("FlowerDeathTimerObserver")
                 .event(flecs::OnSet)
                 .each([this](flecs::entity e, Flower& flower, const Location& location) {
-                    //deathQueue[(deathTick + (int)std::ceil((MIN_DEATH_TIMER + flowerDeathTimerDist(rng)) / 0.1f)) % MAX_DEATH_TICKS]
-                    //    .emplace_back(organism::Entity{ e.id(), Flower::FLOWER_COLOR, location, Status{0,0}, Velocity{0,0}, Organs{ 0, 0, 0, 0, 0, 0, flower }});
+                    deathQueue[(deathTick + (int)std::ceil((MIN_DEATH_TIMER + flowerDeathTimerDist(rng)) / 0.1f)) % MAX_DEATH_TICKS]
+                        .emplace_back(organism::Entity{ .flecsID = e.id(), .location = location });
                 });
 
             world.system("FlowerDeathSystem")
