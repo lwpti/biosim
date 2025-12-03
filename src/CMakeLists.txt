@@ -22,7 +22,6 @@ target_link_libraries(SimBio
     PRIVATE
         raylib
         flecs
-        glm::glm
 )
 
 add_custom_command(TARGET SimBio POST_BUILD
