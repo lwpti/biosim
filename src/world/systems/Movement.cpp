@@ -6,6 +6,7 @@
 #include "raymath.h"
 #include "data/Status.h"
 #include <algorithm>
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {
@@ -33,7 +34,7 @@ namespace simbio {
         }
 
         void Movement::registerMovementSystem(flecs::world& world, int worldWidth, int worldHeight, 
-				float dt, std::vector<std::vector<organism::SimpleEntity>>& chunkGrid, int chunkSize, int chunkCols) {
+				float dt, std::vector<std::vector<organism::Entity>>& chunkGrid, int chunkSize, int chunkCols) {
             world.system<Move, Location, Velocity, Legs, Status>("MovementSystem")
                 .each([&, worldWidth, worldHeight, dt, chunkSize, chunkCols]
                     (flecs::entity e, Move& move, Location& location, Velocity& v, const Legs& legs, Status& status)
@@ -58,21 +59,17 @@ namespace simbio {
                         }
 
                         location.x += dt * (vx0 + v.x) / 2.0f;
-                        location.x = location.x > worldWidth ? 0.0f : location.x;
+                        location.x = location.x >= worldWidth ? 0.0f : location.x;
                         location.x = location.x < 0.0f ? worldWidth - 0.0001f : location.x;
                         
 
                         location.y += dt * (vy0 + v.y) / 2.0f;
-                        location.y = location.y > worldHeight ? 0.0f : location.y;
+                        location.y = location.y >= worldHeight ? 0.0f : location.y;
                         location.y = location.y < 0.0f ? worldHeight - 0.0001f : location.y;
-                        if (location.x == worldWidth) {
-                            location.x = worldWidth - 0.0001f;
-                        }
-                        if (location.y == worldHeight) {
-                            location.y = worldHeight - 0.0001f;
-                        }
 
-                        location.yaw += move.yaw;
+                        location.yaw += move.yaw * dt;
+                        if (location.yaw > PI || location.yaw <= -PI) 
+                            location.yaw = std::atan2(std::sin(location.yaw), std::cos(location.yaw));
 
                         if (move.a.magnitude > 0.6f * legs.size) {
 							float overA = move.a.magnitude - 0.6f * legs.size;
@@ -86,14 +83,13 @@ namespace simbio {
                         if (newChunk != location.chunk) {
                             auto& bucket = chunkGrid[location.chunk];
                             for (int i = 0; i < bucket.size(); ++i) {
-                                if (bucket[i].entityId == e.id()) {
-                                    bucket[i] = bucket.back();
-                                    bucket.pop_back();
+                                if (bucket[i].flecsID == e.id()) {
+                                    location.chunk = newChunk;
+                                    bucket[i].location = location;
+                                    bucket[i].velocity = v;
                                     break;
                                 }
                             }
-                            chunkGrid[newChunk].emplace_back(location, 10, e.id());
-                            location.chunk = newChunk;
                         }
 
                         e.remove<Move>();

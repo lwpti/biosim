@@ -5,15 +5,15 @@
 
 #include "data/Location.h"
 #include "data/Status.h"
-#include "plants/Flower.h"
+#include "organs/Flower.h"
 #include "organs/Arms.h"
 #include "organs/Mouth.h"
 #include "percepts/Touch.h"
+#include "Entity.h"
 
 namespace simbio {
     namespace systems {
         using namespace organism;
-        using namespace plants;
 
         // Helper to scan neighboring chunks
         template <typename Func>
@@ -39,7 +39,7 @@ namespace simbio {
 
         void Eating::registerGrabbingSystem(
             flecs::world& world,
-            std::vector<std::vector<SimpleEntity>>& chunkGrid,
+            std::vector<std::vector<Entity>>& chunkGrid,
             int chunkSize,
             int chunkCols,
             int chunkRows)
@@ -60,7 +60,7 @@ namespace simbio {
                             {
                                 auto& bucket = chunkGrid[adjY * chunkCols + adjX];
                                 for (const auto& candidate : bucket) {
-                                    if (candidate.entityId == grabber.id()) continue;
+                                    if (candidate.flecsID == grabber.id()) continue;
 
                                     float dx = candidate.location.x - loc.x;
                                     float dy = candidate.location.y - loc.y;
@@ -68,7 +68,7 @@ namespace simbio {
 
                                     if (dist2 < bestDist2) {
                                         bestDist2 = dist2;
-                                        bestTarget = flecs::entity(world, candidate.entityId);
+                                        bestTarget = flecs::entity(world, candidate.flecsID);
                                     }
                                 }
                             });
@@ -86,7 +86,7 @@ namespace simbio {
 
         void Eating::registerBitingSystem(
             flecs::world& world,
-            std::vector<std::vector<SimpleEntity>>& chunkGrid,
+            std::vector<std::vector<Entity>>& chunkGrid,
             int chunkSize,
             int chunkCols,
             int chunkRows)
@@ -111,7 +111,7 @@ namespace simbio {
                                 auto& bucket = chunkGrid[idx];
                                 for (int i = 0; i < (int)bucket.size(); ++i) {
                                     const auto& candidate = bucket[i];
-                                    if (candidate.entityId == attacker.id()) continue;
+                                    if (candidate.flecsID == attacker.id()) continue;
 
                                     float dx = candidate.location.x - loc.x;
                                     float dy = candidate.location.y - loc.y;
@@ -119,7 +119,7 @@ namespace simbio {
 
                                     if (dist2 < bestDist2) {
                                         bestDist2 = dist2;
-                                        bestTarget = flecs::entity(world, candidate.entityId);
+                                        bestTarget = flecs::entity(world, candidate.flecsID);
                                         bestChunkIndex = idx;
                                     }
                                 }
@@ -137,7 +137,7 @@ namespace simbio {
                             if (bestChunkIndex >= 0) {
                                 auto& bucket = chunkGrid[bestChunkIndex];
                                 for (int i = 0; i < (int)bucket.size(); ++i) {
-                                    if (bucket[i].entityId == bestTarget.id()) {
+                                    if (bucket[i].flecsID == bestTarget.id()) {
                                         bucket[i] = bucket.back();
                                         bucket.pop_back();
                                         break;

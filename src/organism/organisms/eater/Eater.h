@@ -14,6 +14,6 @@ namespace eater {
 		virtual flecs::entity create() const;
 		virtual flecs::entity create(const flecs::entity& parent) const;
 		virtual flecs::entity create(const flecs::entity& mother, const flecs::entity& father) const;
-		virtual void think(const Organs& organs, Intents& intents) const;
+		virtual void think(const Percepts& percepts, const Organs& organs, Intents& intents) const;
 	};
 }
