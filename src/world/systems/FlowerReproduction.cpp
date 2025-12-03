@@ -53,16 +53,16 @@ namespace simbio {
 
 					bool overlaps = false;
 					for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
-						int adjX = chunkY + dy;
-						adjX = adjX < 0 ? chunkRows - 1 : adjX;
-						adjX = adjX >= chunkRows ? 0 : adjX;
+						int adjY = chunkY + dy;
+						adjY = adjY < 0 ? chunkRows - 1 : adjY;
+						adjY = adjY >= chunkRows ? 0 : adjY;
 
 						for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
-							int adjY = chunkX + dx;
-							adjY = adjY < 0 ? chunkCols - 1 : adjY;
-							adjY = adjY >= chunkCols ? 0 : adjY;
+							int adjX = chunkX + dx;
+							adjX = adjX < 0 ? chunkCols - 1 : adjX;
+							adjX = adjX >= chunkCols ? 0 : adjX;
 
-							auto& bucket = chunkGrid[adjX * chunkCols + adjY];
+							auto& bucket = chunkGrid[adjY * chunkCols + adjX];
 							for (int i = 0; i < bucket.size(); ++i) {
 								float distanceX = bucket[i].location.x - x;
 								float distanceY = bucket[i].location.y - y;

@@ -69,13 +69,20 @@ namespace simbio {
                 if (pointX > maxX) maxX = pointX;
             }
             
-            for (int chunkY = minY / Vision::chunkSize; chunkY <= maxY / Vision::chunkSize; chunkY++) {
-                for (int chunkX = minX / Vision::chunkSize; chunkX <= maxX / Vision::chunkSize; chunkX++) {
-                    while (chunkX >= chunkCols) chunkX -= chunkCols;
-                    while (chunkX < 0) chunkX += chunkCols;
-                    while (chunkY >= chunkRows) chunkY -= chunkRows;
-                    while (chunkY < 0) chunkY += chunkRows;
-                    auto& bucket = (*Vision::chunkGrid)[chunkY * Vision::chunkCols + chunkX];
+
+            int startChunkY = std::floor(minY / Vision::chunkSize);
+            int endChunkY = std::floor(maxY / Vision::chunkSize);
+            int startChunkX = std::floor(minX / Vision::chunkSize);
+            int endChunkX = std::floor(maxX / Vision::chunkSize);
+            for (int chunkY = startChunkY; chunkY <= endChunkY; chunkY++) {
+                for (int chunkX = startChunkX; chunkX <= endChunkX; chunkX++) {
+                    int cX = chunkX;
+                    int cY = chunkY;
+                    if (cX < 0) cX += chunkCols;
+                    else if (cX >= chunkCols) cX -= chunkCols;
+                    if (cY < 0) cY += chunkRows;
+                    else if (cY >= chunkRows) cY -= chunkRows;
+                    auto& bucket = (*Vision::chunkGrid)[cY * Vision::chunkCols + cX];
                     for (auto& targetEntity : bucket) {
                         if (targetEntity.flecsID == entity.id()) continue;
                         float distX = targetEntity.location.x - entityX;
