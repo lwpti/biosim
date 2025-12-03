@@ -67,7 +67,7 @@ int main() {
     std::vector<std::vector<Entity>> chunkGrid(CHUNK_COLS * CHUNK_ROWS);
 
 	// Enforce Legs size constraints.
-	Legs::registerLegsObserver(world);
+	Organs::registerOrganObservers(world);
 
     // Spawn some Mover entities.
     mover::Mover mover(world);
