@@ -29,7 +29,7 @@ namespace simbio {
             float point1Y = entityY + viewDist * std::sin(angle1);
 
             float angle2 = yaw + halfFOV;
-            if (angle1 > PI || angle1 <= -PI) angle2 = std::atan2(std::sin(angle2), std::cos(angle2));
+            if (angle2 > PI || angle2 <= -PI) angle2 = std::atan2(std::sin(angle2), std::cos(angle2));
             float point2X = entityX + viewDist * std::cos(angle2);
             float point2Y = entityY + viewDist * std::sin(angle2);
 
@@ -73,8 +73,8 @@ namespace simbio {
                 for (int chunkX = minX / Vision::chunkSize; chunkX <= maxX / Vision::chunkSize; chunkX++) {
                     while (chunkX >= chunkCols) chunkX -= chunkCols;
                     while (chunkX < 0) chunkX += chunkCols;
-                    while (chunkY >= chunkRows) chunkX -= chunkRows;
-                    while (chunkY < 0) chunkX += chunkRows;
+                    while (chunkY >= chunkRows) chunkY -= chunkRows;
+                    while (chunkY < 0) chunkY += chunkRows;
                     auto& bucket = (*Vision::chunkGrid)[chunkY * Vision::chunkCols + chunkX];
                     for (auto& targetEntity : bucket) {
                         if (targetEntity.flecsID == entity.id()) continue;

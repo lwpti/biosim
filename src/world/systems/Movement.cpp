@@ -80,13 +80,13 @@ namespace simbio {
                         }
                         
                         int newChunk = (int)(location.y / chunkSize) * chunkCols + (int)(location.x / chunkSize);
-                        if (newChunk != location.chunk) {
-                            auto& bucket = chunkGrid[location.chunk];
-                            for (int i = 0; i < bucket.size(); ++i) {
-                                if (bucket[i].flecsID == e.id()) {
+                        auto& bucket = chunkGrid[location.chunk];
+                        for (int i = 0; i < bucket.size(); ++i) {
+                            if (bucket[i].flecsID == e.id()) {
+                                bucket[i].location = location;
+                                bucket[i].velocity = v;
+                                if (newChunk != location.chunk) {
                                     location.chunk = newChunk;
-                                    bucket[i].location = location;
-                                    bucket[i].velocity = v;
                                     chunkGrid[newChunk].push_back(bucket[i]);
                                     bucket[i] = bucket.back();
                                     bucket.pop_back();
