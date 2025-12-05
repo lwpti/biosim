@@ -1,13 +1,13 @@
-#include "Mover.h"
+    #include "Mover.h"
 #include <random>
 #include <numbers>
 
 namespace mover {
-	using namespace simbio::organism;
 
 	Mover::Mover(flecs::world& world) : Organism<MoverBrain>(world) {}
 
 	flecs::entity Mover::create() const {
+
 		return world.entity()
 			.add<MoverBrain>()
 			.set<Body>({ 10 })
@@ -16,6 +16,7 @@ namespace mover {
 	}
 
 	flecs::entity Mover::create(const flecs::entity& parent) const {
+
 		return world.entity()
 			.add<MoverBrain>()
 			.set<Body>({ 10 })
@@ -24,6 +25,7 @@ namespace mover {
 	}
 
 	flecs::entity Mover::create(const flecs::entity& mother, const flecs::entity& father) const {
+
 		return world.entity()
 			.add<MoverBrain>()
 			.set<Body>({ 10 })

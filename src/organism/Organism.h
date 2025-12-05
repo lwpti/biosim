@@ -3,15 +3,11 @@
 #include <flecs.h>
 #include <optional>
 #include <type_traits>
-#include "data/Location.h"
+#include "data/Data.h"
 #include "organs/Organs.h"
-#include "data/Status.h"
-#include "data/Color.h"
-#include "data/Velocity.h"
 #include <algorithm>
 #include "percepts/Percepts.h"
 #include "Entity.h"
-#include "systems/Vision.h"
 
 namespace simbio {
 	namespace organism {
@@ -90,7 +86,10 @@ namespace simbio {
 
 							Percepts percepts;
 							// Hard coded dt :(
-							percepts.sight = simbio::systems::Vision::computeSightPercept(e, 0.1, e.get<Location>(), organs.eyes, e.get<Status>());
+							if (const Sight* sight = e.try_get<Sight>()) {
+								percepts.sight = *sight;
+								e.remove<Sight>();
+							}
 							if (const Sound* sound = e.try_get<Sound>()) {
 								percepts.sound = *sound;
 								e.remove<Sound>();

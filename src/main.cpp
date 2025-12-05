@@ -1,219 +1,103 @@
 #include "flecs.h"
-#include "Organism.h"
 #include "raylib.h"
-#include "organism/data/Velocity.h"
-#include "organism/organisms/mover/Mover.h"
-#include "organism/organisms/eater/Eater.h"
-#include "world/systems/Movement.h"
-#include "world/systems/Death.h"
-#include "world/systems/FlowerReproduction.h"
-#include "world/systems/Eating.h"
-#include "world/systems/Hearing.h"
-#include "organism/percepts/Touch.h"
-#include <cmath>
+#include "world/World.h"
+#include "systems/Systems.h"
+#include "organisms/mover/Mover.h"
+#include "organisms/eater/Eater.h"
+#include "organs/OrganObserver.h"
 #include <random>
-#include "organs/Flower.h"
-#include "data/Status.h"
-#include <vector>
-#include <type_traits>
-#include <utility>
-#include <concepts>
-#include <algorithm>
-#include <thread>
-#include "Entity.h"
-#include "systems/Vision.h"
 
 /// <summary>
 /// Draws all organisms and plants in the flecs world.
 /// </summary>
-/// <param name="world">The flecs world to draw from</param>
 void draw(flecs::world& world);
 
 /// <summary>
 /// Spawns a number of organisms of the given type within the specified rectangular area,
 /// adding them to the chunk grid for spatial partitioning.
 /// </summary>
-/// <typeparam name="Brain">The Brain type of the organism to spawn</typeparam>
-/// <param name="organism">The organism factory to use for creating organisms</param>
-/// <param name="count">Number of organisms to spawn</param>
-/// <param name="minX">Minimum X coordinate of the spawn area</param>
-/// <param name="minY">Minimum Y coordinate of the spawn area</param>
-/// <param name="maxX">Maximum X coordinate of the spawn area</param>
-/// <param name="maxY">Maximum Y coordinate of the spawn area</param>
-/// <param name="chunkGrid">Reference to the chunk grid to place new organisms into</param>
-/// <param name="chunkSize">Size of each chunk in the chunk grid</param>
-/// <param name="chunkCols">Number of columns in the chunk grid</param>
 template <typename Brain>
-void spawnOrganisms(simbio::organism::Organism<Brain>& organism, int count, float minX, float minY, float maxX, float maxY, 
-    std::vector<std::vector<simbio::organism::Entity>>& chunkGrid, int chunkSize, int chunkCols);
+void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
+    simbio::World world, float minX, float minY, float maxX, float maxY);
 
 int main() {
-    using namespace simbio::organism;
+    using namespace simbio;
+    using namespace organism;
+    
+    simbio::World world{ 1024, 1024, 0.1f };
+    world.simulationSpeed = 100;
 
-    flecs::world world;
-
-    // Do not enable; will break EVERYTHING
-    //world.set_threads(std::thread::hardware_concurrency() - 1);
-
-    // Currently, displayWidth and displayHeight must be multiples of FLOWER_SPAWN_BOX_SIZE for flower spawning...
-    // ...and a multiple of 16 for chunks.
-    constexpr float FLOWER_SPAWN_BOX_SIZE = 256;
-    const int DISPLAY_WIDTH = 1024;
-    const int DISPLAY_HEIGHT = 1024;
-    const float TIME_STEP = 0.1f;
-    const int SIM_SPEED = 100;
-    const int CHUNK_SIZE = 16;
-    const int CHUNK_COLS = DISPLAY_WIDTH / CHUNK_SIZE;
-    const int CHUNK_ROWS = DISPLAY_HEIGHT / CHUNK_SIZE;
-
-    // Create chunk grid for spatial partitioning.
-    std::vector<std::vector<Entity>> chunkGrid(CHUNK_COLS * CHUNK_ROWS);
-
-	// Enforce Legs size constraints.
-	Organs::registerOrganObservers(world);
-
-    // Spawn some Mover entities.
-    mover::Mover mover(world);
-    spawnOrganisms(mover, 3, 100.0f, 100.0f, 200.0f, 200.0f, chunkGrid, CHUNK_SIZE, CHUNK_COLS);
-
-    // Spawn some Eater entities.
-    eater::Eater eater(world);
-    spawnOrganisms(eater, 3, 800.0f, 800.0f, 900.0f, 900.0f, chunkGrid, CHUNK_SIZE, CHUNK_COLS);;
+    // Enforce Legs size constraints.
+    OrganObserver::registerOrganObservers(world);
 
     // Register MoveIntent and Movement systems.
-    simbio::systems::Movement movement;
-    movement.registerMoveIntentSystem(world);
-    movement.registerMovementSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS);
+    systems::Movement::registerMoveIntentSystem(world);
+    systems::Movement::registerMovementSystem(world);
 
     // Register flower reproduction system.
-    simbio::systems::FlowerReproduction flowerReproduction;
-    flowerReproduction.registerFlowerReproductionSystem(world, DISPLAY_WIDTH, DISPLAY_HEIGHT, 
-        TIME_STEP, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+    systems::FlowerReproduction::registerFlowerReproductionSystem(world);
 
     // Register eating / grabbing systems.
-    simbio::systems::Eating eating;
-    eating.registerGrabbingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
-    eating.registerBitingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+    //systems::Eating eating;
+    //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
+    //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
 
     //Register Death system.
-    auto* death = new simbio::systems::Death();
-    death->registerDeathSystem(world, chunkGrid);
-    death->registerFlowerDeathSystem(world, chunkGrid);
+    systems::Death::registerDeathSystem(world);
+    systems::Death::registerFlowerDeathSystem(world);
 
     //Register Hearing system.
-    simbio::systems::Hearing::registerHearingSystem(world, chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS, TIME_STEP);
+    systems::Hearing::registerHearingSystem(world);
 
     //Register Vision system.
-    simbio::systems::Vision::registerVisionSystem(chunkGrid, CHUNK_SIZE, CHUNK_COLS, CHUNK_ROWS);
+    systems::Vision::registerVisionSystem(world);
+
+    // Spawn some Mover entities.
+    mover::Mover mover(world.flecsWorld);
+    spawnOrganismsInBox(mover, 3, world, 100.0f, 100.0f, 200.0f, 200.0f);
+
+    // Spawn some Eater entities.
+    eater::Eater eater(world.flecsWorld);
+    spawnOrganismsInBox(eater, 3, world, 800.0f, 800.0f, 900.0f, 900.0f);;
 
     // Spawn Flowers across the grid.
     std::random_device rd;
     std::mt19937 rng(rd());
     std::uniform_int_distribution<int> sizeDist(Flower::MIN_SIZE, Flower::MAX_SIZE);
-    std::uniform_real_distribution<float> unitDist(0.0f, 1.0f);
-    std::exponential_distribution<float> reproductionTimerDist(1.0f / Flower::MIN_REPRODUCTION_TIMER);
-    
+    std::uniform_real_distribution<float> xDist(0.0f, world.width - 0.001f);
+    std::uniform_real_distribution<float> yDist(0.0f, world.height - 0.001f);
+    for (int i = 0; i < 20; ++i) world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng));
 
-    // Making sure the flowers don't overlap
-    for (float x = 0.0f; x < DISPLAY_WIDTH; x += FLOWER_SPAWN_BOX_SIZE) {
-        for (float y = 0.0f; y < DISPLAY_HEIGHT; y += FLOWER_SPAWN_BOX_SIZE) {
-            int spawned = 0;
-            int attempts = 0;
-            const int MAX_ATTEMPTS = 50; // avoid infinite loops if area gets crowded
-
-            while (spawned < 5 && attempts < MAX_ATTEMPTS) {
-                ++attempts;
-
-                float spawnX = x + unitDist(rng) * FLOWER_SPAWN_BOX_SIZE;
-                float spawnY = y + unitDist(rng) * FLOWER_SPAWN_BOX_SIZE;
-
-                int chunkX = (std::min)((int)(spawnX / CHUNK_SIZE), CHUNK_COLS - 1);
-                int chunkY = (std::min)((int)(spawnY / CHUNK_SIZE), CHUNK_ROWS - 1);
-                int chunk = chunkY * CHUNK_COLS + chunkX;
-
-                int size = sizeDist(rng);
-                float radius = size * 0.5f;
-
-                bool overlaps = false;
-
-                // Check this chunk and its 8 neighbors for overlapping flowers
-                for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
-                    int adjChunkY = chunkY + dy;
-                    if (adjChunkY < 0) adjChunkY = CHUNK_ROWS - 1;
-                    if (adjChunkY >= CHUNK_ROWS) adjChunkY = 0;
-
-                    for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
-                        int adjChunkX = chunkX + dx;
-                        if (adjChunkX < 0) adjChunkX = CHUNK_COLS - 1;
-                        if (adjChunkX >= CHUNK_COLS) adjChunkX = 0;
-
-                        auto& bucket = chunkGrid[adjChunkY * CHUNK_COLS + adjChunkX];
-                        for (const auto& entry : bucket) {
-                            // Only avoid overlapping other flowers; organisms can overlap plants
-                            flecs::entity adjEntity(world, entry.flecsID);
-                            if (!adjEntity.is_alive()) continue;
-                            if (!adjEntity.has<Flower>()) continue;
-
-                            float adjRadius = entry.getSize() * 0.5f;
-                            float dxPos = entry.location.x - spawnX;
-                            float dyPos = entry.location.y - spawnY;
-                            float minDist = radius + adjRadius + 2.0f; // small gap
-
-                            if (dxPos * dxPos + dyPos * dyPos <= minDist * minDist) {
-                                overlaps = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (overlaps) {
-                    // Try again with a different random point
-                    continue;
-                }
-
-                // No overlap -> commit the flower
-                Location location{ spawnX, spawnY, 0.0f, chunk };
-
-                flecs::entity flower = world.entity()
-                    .set<Location>(location)
-                    .set<simbio::organism::Color>(Flower::FLOWER_COLOR)
-                    .set<Flower>(Flower{ (float)size });
-
-                int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / TIME_STEP);
-                using namespace simbio::systems;
-                Entity e{ .flecsID = flower.id(), .color = Flower::FLOWER_COLOR, .location = location, 
-                    .organs = Organs{ .flower = Flower{ (float)size } } };
-                FlowerReproduction::reproductionQueue
-                    [(FlowerReproduction::currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(e);
-
-                chunkGrid[chunk].push_back(e);
-                ++spawned;
-            }
-        }
-    }
-
-
-    InitWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "SimBio");
-    //SetTargetFPS(30);
+    InitWindow(world.width, world.height, "SimBio");
+    SetTargetFPS(30);
     SetExitKey(KEY_SPACE);
 
     while (!WindowShouldClose()) {
+        if (GetKeyPressed() != 0) break;
 
         BeginDrawing();
         ClearBackground(::Color{0, 0, 0, 255});
 
-        for (int i = 0; i < SIM_SPEED; ++i) world.progress(TIME_STEP);
+        world.progress();
         printf("FPS: %d\n", GetFPS());
 
-        draw(world);
+        draw(world.flecsWorld);
 
         EndDrawing();
     }
 
     CloseWindow();
-    delete death;
     return 0;
+}
+
+template <typename Brain>
+void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
+    simbio::World world, float minX, float minY, float maxX, float maxY) {
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_real_distribution<float> xDist(minX, maxX);
+    std::uniform_real_distribution<float> yDist(minY, maxY);
+    for (int i = 0; i < count; ++i) world.spawnOrganism<Brain>(organism, xDist(rng), yDist(rng));
 }
 
 void draw(flecs::world& world) {
@@ -294,48 +178,4 @@ void draw(flecs::world& world) {
         drawFlowersQuery.each([](const simbio::organism::Color& color, const Flower& flower, const Location& location) {
             DrawCircleV({ location.x, location.y }, flower.size * 0.5f, ::Color{ color.r, color.g, color.b, 255 });
         });
-}
-
-template <typename Brain>
-	void spawnOrganisms(simbio::organism::Organism<Brain>& organism, int count, float minX, float minY, float maxX, float maxY, 
-    std::vector<std::vector<simbio::organism::Entity>>& chunkGrid, int chunkSize, int chunkCols) {
-    using namespace simbio::organism;
-
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_real_distribution<float> xDist(minX, maxX);
-    std::uniform_real_distribution<float> yDist(minY, maxY);
-    int chunkRows = chunkGrid.size() / chunkCols;
-
-    for (int i = 0; i < count; ++i) {
-        float x = xDist(rng);
-        float y = yDist(rng);
-        int chunkX = (std::min)((int)(x / chunkSize), chunkCols - 1);
-        int chunkY = (std::min)((int)(y / chunkSize), chunkRows - 1);
-        int chunk = chunkY * chunkCols + chunkX;
-
-        Location location{ x, y, 0.0f, chunk };
-        
-        flecs::entity e = organism.create();
-        e.set<Location>(location);
-        e.set<Velocity>({ 0.0f, 0.0f });
-        e.set<Status>({ 100.0f, 100.0f });
-
-        Organs organs;
-        if (e.has<Arms>()) organs.arms = e.get<Arms>();
-        if (e.has<Body>()) organs.body = e.get<Body>();
-        if (e.has<Ears>()) organs.ears = e.get<Ears>();
-        if (e.has<Eyes>()) organs.eyes = e.get<Eyes>();
-        if (e.has<Legs>()) organs.legs = e.get<Legs>();
-        if (e.has<Mouth>()) organs.mouth = e.get<Mouth>();
-
-        chunkGrid[chunk].emplace_back(
-            e.id(), 
-            e.has<simbio::organism::Color>() ? e.get<simbio::organism::Color>() : simbio::organism::Color{ 255, 255, 255 },
-            e.get<Location>(),
-            e.get<Status>(),
-            e.get<Velocity>(),
-            organs
-        );
-    }
 }

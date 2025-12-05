@@ -1,36 +1,36 @@
 #include "Hearing.h"
 #include <cmath>
 #include "data/Status.h"
+#include "raylib.h"
 
 namespace simbio {
 	namespace systems {
 		using namespace organism;
-		void Hearing::registerHearingSystem(flecs::world& world, std::vector<std::vector<organism::Entity>>& chunkGrid,
-			int chunkSize, int chunkCols, int chunkRows, float timeStep) {
-			world.system<Body, Legs, Location, Velocity>("HearingSystem").each(
-				[=, &world, &chunkGrid](flecs::entity source, const Body& body, 
+		void Hearing::registerHearingSystem(World& world) {
+			world.flecsWorld.system<Body, Legs, Location, Velocity>("HearingSystem").each(
+				[&](flecs::entity source, const Body& body, 
 					const Legs& legs, const Location& location, const Velocity& velocity) {
 					float speed2 = velocity.x * velocity.x + velocity.y * velocity.y;
 					if (speed2 < 0.0001f) return;
 
 					float radius = (body.size + legs.size) * 10.0f;
 
-					int startChunkY = std::floor((location.y - radius) / chunkSize);
-					int endChunkY = std::floor((location.y + radius) / chunkSize);
-					int startChunkX = std::floor((location.x - radius) / chunkSize);
-					int endChunkX = std::floor((location.x + radius) / chunkSize);
+					int startChunkY = std::floor((location.y - radius) / World::CHUNK_SIZE);
+					int endChunkY = std::floor((location.y + radius) / World::CHUNK_SIZE);
+					int startChunkX = std::floor((location.x - radius) / World::CHUNK_SIZE);
+					int endChunkX = std::floor((location.x + radius) / World::CHUNK_SIZE);
 					for (int chunkY = startChunkY; chunkY <= endChunkY; ++chunkY) {
 						for (int chunkX = startChunkX; chunkX <= endChunkX; ++chunkX) {
 							int cX = chunkX;
 							int cY = chunkY;
-							if (cX < 0) cX += chunkCols;
-							else if (cX >= chunkCols) cX -= chunkCols;
-							if (cY < 0) cY += chunkRows;
-							else if (cY >= chunkRows) cY -= chunkRows;
-							auto& bucket = chunkGrid[cY * chunkCols + cX];
+							if (cX < 0) cX += world.chunkCols;
+							else if (cX >= world.chunkCols) cX -= world.chunkCols;
+							if (cY < 0) cY += world.chunkRows;
+							else if (cY >= world.chunkRows) cY -= world.chunkRows;
+							auto& bucket = world.chunkGrid[cY * world.chunkCols + cX];
 							for (auto& entity : bucket) {
 								if (entity.flecsID == source.id()) continue;
-								flecs::entity listener = world.entity(entity.flecsID);
+								flecs::entity listener = world.flecsWorld.entity(entity.flecsID);
 								
 								const Ears* ears = listener.try_get<Ears>();
 								if (!ears || ears->size == 0.0f) continue;
@@ -60,7 +60,7 @@ namespace simbio {
 									heard->direction = std::atan2(soundY, soundX);
 								}
 								Status& status = listener.get_mut<Status>();
-								status.energy -= (0.01f * ears->size) * timeStep;
+								status.energy -= (0.01f * ears->size) * world.timeStep;
 								entity.status = status;
 							}
 						}

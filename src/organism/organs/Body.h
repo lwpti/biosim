@@ -1,7 +1,5 @@
 #pragma once
 
-#include <raylib.h>
-
 namespace simbio {
 	namespace organism {
 		/// <summary>
