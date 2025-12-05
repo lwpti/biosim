@@ -4,28 +4,24 @@
 #include <cmath>
 #include "data/Location.h"
 #include "Entity.h"
+#include <random>
 
 namespace simbio {
 	namespace systems {
 		using namespace organism;
 
-		void FlowerReproduction::registerFlowerReproductionSystem(flecs::world& world, int worldWidth, int worldHeight,
-			float timeStep, std::vector<std::vector<organism::Entity>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows) {
-			this->worldWidth = worldWidth;
-			this->worldHeight = worldHeight;
-
+		void FlowerReproduction::registerFlowerReproductionSystem(World& world) {
 		 	static std::mt19937 rng{ std::random_device{}() };
-			static std::exponential_distribution<float> reproductionTimerDist{ 1.0f / Flower::MIN_REPRODUCTION_TIMER };
+			static std::exponential_distribution<float> reproductionTimerDist{ 1.0f / Flower::REPRODUCTION_TIMER_SPREAD };
 			static std::uniform_real_distribution<float> distanceDist{ -10.0f, 10.0f };
 			static std::uniform_int_distribution<int> sizeChangeDist{ -1, 1 };
 
-			world.system("FlowerReproductionSystem")
-				.run([this, timeStep, &world, &chunkGrid, chunkSize, chunkCols, chunkRows](flecs::iter& it) {
+			world.flecsWorld.system("FlowerReproductionSystem").kind(flecs::OnUpdate).run([&](flecs::iter& it) {
 				auto& bucket = reproductionQueue[currentReproductionTick];
         		std::vector<Entity> flowers;
         		flowers.swap(bucket);   
 				for (auto flower : flowers) {
-					flecs::entity e(world, flower.flecsID);
+					flecs::entity e(world.flecsWorld, flower.flecsID);
 					if (!e.is_alive()) continue;
 					float childSize = std::clamp(flower.getSize() + sizeChangeDist(rng), Flower::MIN_SIZE, Flower::MAX_SIZE);
 					float childRadius = childSize * 0.5f;
@@ -36,69 +32,33 @@ namespace simbio {
 				
 					float x = flower.location.x + std::copysign(sizeOffset, xOffset) + xOffset;
 					float y = flower.location.y + std::copysign(sizeOffset, yOffset) + yOffset;
-					x = x >= this->worldWidth ? 0.0f : x;
-					y = y >= this->worldHeight ? 0.0f : y;
-					x = x < 0.0f ? this->worldWidth - 0.0001f : x;
-					y = y < 0.0f ? this->worldHeight - 0.0001f : y;
+					x = x >= world.width ? 0.0f : x;
+					y = y >= world.height ? 0.0f : y;
+					x = x < 0.0f ? world.width - 0.0001f : x;
+					y = y < 0.0f ? world.height - 0.0001f : y;
 
-					int chunkX = (int)(x / chunkSize);
-					int chunkY = (int)(y / chunkSize);
-					int chunk = chunkY * chunkCols + chunkX;
+					int chunkX = (int)(x / World::CHUNK_SIZE);
+					int chunkY = (int)(y / World::CHUNK_SIZE);
+					int chunk = chunkY * world.chunkCols + chunkX;
 					// This is a temporary optimization which limits flower population density.
-					if (chunkGrid[chunk].size() >= 3) {
-						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
-						// Technically, this makes low timers more common?
-						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
-						continue;
-					}
-
-					bool overlaps = false;
-					for (int dy = -1; dy <= 1 && !overlaps; ++dy) {
-						int adjY = chunkY + dy;
-						adjY = adjY < 0 ? chunkRows - 1 : adjY;
-						adjY = adjY >= chunkRows ? 0 : adjY;
-
-						for (int dx = -1; dx <= 1 && !overlaps; ++dx) {
-							int adjX = chunkX + dx;
-							adjX = adjX < 0 ? chunkCols - 1 : adjX;
-							adjX = adjX >= chunkCols ? 0 : adjX;
-
-							auto& bucket = chunkGrid[adjY * chunkCols + adjX];
-							for (int i = 0; i < bucket.size(); ++i) {
-								float distanceX = bucket[i].location.x - x;
-								float distanceY = bucket[i].location.y - y;
-								float minDistance = childRadius + 2.0f + bucket[i].getSize() * 0.5f;
-
-								if (distanceX * distanceX + distanceY * distanceY <= minDistance * minDistance) {
-									overlaps = true;
-									break;
-								}
-							}
-						}
-					}
-
-					if (!overlaps) {
-						Location location = { x, y, 0.0f, chunk };
-
-						flecs::entity child = world.entity()
-							.set<Flower>(Flower{ (float)childSize })
-							.set<simbio::organism::Color>(Flower::FLOWER_COLOR)
-							.set<Location>(location);
-
-						int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
-						Entity e = Entity{ .flecsID = child.id(), .color = Flower::FLOWER_COLOR, 
-							.location = location, .organs = Organs{ .flower = Flower { childSize } } };
-						reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(e);
-
-						chunkGrid[chunk].push_back(e);
-					}
-						
-					int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / timeStep);
+					if (world.chunkGrid[chunk].size() >= 3) continue;
+					
+					int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / world.timeStep);
 					reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
+
+					world.spawnFlower(childSize, x, y);
 				}
 
 				currentReproductionTick = (currentReproductionTick + 1) % Flower::MAX_REPRODUCTION_TICKS;
-			});		
+			});
+
+			world.flecsWorld.observer<Flower>().event(flecs::OnSet).each(
+				[&](flecs::entity entity, Flower& flower) {
+					int reproductionTime = (int)std::ceil((Flower::MIN_REPRODUCTION_TIMER + reproductionTimerDist(rng)) / world.timeStep);
+					reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].emplace_back(
+						Entity{ .flecsID = entity.id(), .color = Flower::FLOWER_COLOR, .location = entity.get<Location>(), .organs = { .flower = flower } });
+				}
+			);
 		}
 	}
 }

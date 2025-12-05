@@ -5,6 +5,7 @@
 namespace eater {
 	using namespace simbio::organism;
 
+
 	Eater::Eater(flecs::world& world) : Organism<EaterBrain>(world) {}
 
 	flecs::entity Eater::create() const {

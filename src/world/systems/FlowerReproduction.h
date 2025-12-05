@@ -1,12 +1,10 @@
 #pragma once
 
-#include "flecs.h"
-#include <random>
 #include <vector>
-#include "Organism.h"
 #include <array>
 #include "organs/Flower.h"
 #include "Entity.h"
+#include "World.h"
 
 namespace simbio {
 	namespace systems {
@@ -23,15 +21,10 @@ namespace simbio {
 			/// <param name="chunkSize">Size of each chunk in the chunk grid</param>
 			/// <param name="chunkCols">Number of columns in the chunk grid</param>
 			/// <param name="chunkRows">Number of rows in the chunk grid</param>
-			void registerFlowerReproductionSystem(flecs::world& world, int worldWidth, int worldHeight, float timeStep, 
-				std::vector<std::vector<organism::Entity>>& chunkGrid, int chunkSize, int chunkCols, int chunkRows);
+			static void registerFlowerReproductionSystem(World& world);
 
 			static inline std::array<std::vector<organism::Entity>, organism::Flower::MAX_REPRODUCTION_TICKS> reproductionQueue{};
 			static inline int currentReproductionTick = 0;
-
-		private:
-			int worldWidth;
-			int worldHeight;
 		};
 	}
 }

@@ -9,9 +9,11 @@ add_executable(SimBio
     world/systems/Movement.cpp
     world/systems/Death.cpp
     world/systems/FlowerReproduction.cpp
-    world/systems/Eating.cpp
+    world/systems/Biting.cpp
     world/systems/Hearing.cpp
     world/systems/Vision.cpp
+    world/systems/Grabbing.cpp
+    world/World.cpp
 
     organism/organisms/eater/Eater.cpp 
     organism/organisms/mover/Mover.cpp
