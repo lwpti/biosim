@@ -34,7 +34,7 @@ namespace mover {
 
 	// Currently, the Mover brain just accelerates in a random direction.
 	void Mover::think(MoverBrain& brain,  const Status& status, const Percepts& percepts, 
-		const Organs& organs, Intents& intents) const {
+		const Velocity& speed, const Organs& organs, Intents& intents) const {
 		float ax = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
 		float ay = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
 		intents.legs = LegsIntent({ ax, ay }, 0.0f);
