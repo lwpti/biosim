@@ -81,7 +81,13 @@ namespace simbio {
                     float angle = std::atan2(distY, distX) - yaw;
                     if (angle > PI || angle <= -PI) angle = std::atan2(std::sin(angle), std::cos(angle));
                     if (std::fabs(angle) > halfFOV) return;
-                    sight.visibleEntities.push_back({ targetEntity, std::sqrt(dist2), angle });
+                    float yawX = std::cos(location.yaw);
+					float yawY = std::sin(location.yaw);
+					Velocity relativeV{ 
+					    targetEntity.velocity.x * yawX + targetEntity.velocity.y * yawY, 
+                        -targetEntity.velocity.x * yawY + targetEntity.velocity.y * yawX 
+					};
+                    sight.visibleEntities.push_back({ targetEntity, relativeV, std::sqrt(dist2), angle });
                 });
 
                 entity.set<Sight>(sight);
