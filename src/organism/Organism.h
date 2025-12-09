@@ -62,7 +62,7 @@ namespace simbio {
 			/// </summary>
 			/// <param name="organs">All the organ components from the organism flecs entity</param>
 			/// <param name="intents">Intent components to be added to the flecs entity</param>
-			virtual void think(const Percepts& percepts, const Organs& organs, Intents& intents) const = 0;	// Percepts should be parameter too
+			virtual void think(Brain& brain, const Percepts& percepts, const Organs& organs, Intents& intents) const = 0;	// Percepts should be parameter too
 
 			/// <summary>
 			/// Registers Brain flecs systems. The behavior of these systems is defined by the think methods of
@@ -73,7 +73,7 @@ namespace simbio {
 			/// <param name="world">flecs world which the system is registed in</param>
 			Organism(flecs::world& world) : world(world) {
 				world.system<Brain>()
-					.each([this](flecs::entity e, const Brain& brain) 
+					.each([this](flecs::entity e, Brain& brain) 
 						{
 							Organs organs;
 							if (const Arms* arms = e.try_get<Arms>()) organs.arms = *arms;
@@ -85,7 +85,6 @@ namespace simbio {
 							if (const Mouth* mouth = e.try_get<Mouth>()) organs.mouth = *mouth;
 
 							Percepts percepts;
-							// Hard coded dt :(
 							if (const Sight* sight = e.try_get<Sight>()) {
 								percepts.sight = *sight;
 								e.remove<Sight>();
@@ -97,7 +96,8 @@ namespace simbio {
 
 							Intents intents;
 							
-							this->think(percepts, organs, intents);
+							this->think(brain, percepts, organs, intents);
+
 							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 							if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
 						});

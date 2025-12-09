@@ -74,7 +74,7 @@ int main() {
 
     InitWindow(world.width, world.height, "SimBio");
     SetTargetFPS(30);
-    SetTargetFPS(30);
+    SetExitKey(KEY_ENTER);
 
     // Pause display to observe initial spawn; press any key to proceed
     while (!WindowShouldClose()) {
@@ -83,7 +83,7 @@ int main() {
         BeginDrawing();
         ClearBackground(::Color{0, 0, 0, 255});
 
-        //printf("FPS: %d\n", GetFPS());
+        printf("FFPS: %d\n", GetFPS());
 
         draw(world.flecsWorld);
 
@@ -91,13 +91,11 @@ int main() {
     }
 
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_ENTER)) break;
-
         BeginDrawing();
         ClearBackground(::Color{0, 0, 0, 255});
 
         world.progress();
-        //printf("FPS: %d\n", GetFPS());
+        printf("FPS: %d\n", GetFPS());
 
         draw(world.flecsWorld);
 

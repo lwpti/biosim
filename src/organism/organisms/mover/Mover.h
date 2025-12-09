@@ -6,7 +6,9 @@
 namespace mover {
 	using namespace simbio::organism;
 	
-	struct MoverBrain {};
+	struct MoverBrain {
+		int dummy;
+	};
 
 	class Mover : public Organism<MoverBrain> {
 	public:
@@ -14,6 +16,6 @@ namespace mover {
 		virtual flecs::entity create() const;
 		virtual flecs::entity create(const flecs::entity& parent) const;
 		virtual flecs::entity create(const flecs::entity& mother, const flecs::entity& father) const;
-		virtual void think(const Percepts& percepts, const Organs& organs, Intents& intents) const;
+		virtual void think(MoverBrain& brain, const Percepts& percepts, const Organs& organs, Intents& intents) const;
 	};
 }

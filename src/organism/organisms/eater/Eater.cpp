@@ -5,7 +5,6 @@
 namespace eater {
 	using namespace simbio::organism;
 
-
 	Eater::Eater(flecs::world& world) : Organism<EaterBrain>(world) {}
 
 	flecs::entity Eater::create() const {
@@ -36,7 +35,7 @@ namespace eater {
 	}
 
 	// Currently, the Mover brain just accelerates in a random direction.
-	void Eater::think(const Percepts& percepts, const Organs& organs, Intents& intents) const {
+	void Eater::think(EaterBrain& brain, const Percepts& percepts, const Organs& organs, Intents& intents) const {
 		float ax = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
 		float ay = -20.0f + (rand() / (float)RAND_MAX) * 40.0f;
 		intents.legs = LegsIntent({ ax, ay }, 0.0f);
