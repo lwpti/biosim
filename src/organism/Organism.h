@@ -61,7 +61,7 @@ namespace simbio {
 			/// adds intent flecs components representing what it should do.
 			/// </summary>
 			virtual void think(Brain& brain, const Status& status, const Percepts& percepts, 
-				const Velocity& speed, const Organs& organs, Intents& intents) const = 0;
+				const Velocity& velocity, const Organs& organs, Intents& intents) const = 0;
 
 			/// <summary>
 			/// Registers Brain flecs systems. The behavior of these systems is defined by the think methods of
@@ -97,8 +97,10 @@ namespace simbio {
 					
 					float yawX = std::cos(location.yaw);
 					float yawY = std::sin(location.yaw);
-					Velocity speed{ velocity.x * yawX + velocity.y * yawY, -velocity.x * yawY + velocity.y * yawX };
-					this->think(brain, status, percepts, speed, organs, intents);
+					Velocity relativeV{ 
+						velocity.x * yawX + velocity.y * yawY, -velocity.x * yawY + velocity.y * yawX 
+					};
+					this->think(brain, status, percepts, relativeV, organs, intents);
 
 					if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 					if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
