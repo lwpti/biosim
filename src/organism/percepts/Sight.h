@@ -18,18 +18,22 @@ namespace simbio {
             Status status {0.0f, 0.0f };
             Velocity velocity{ 0.0f, 0.0f };
             Organs organs;
+            float distance{ 0.0f };
+            float direction{ 0.0f };
 
             float getSize() const {
                 return (std::max)(organs.body.size, organs.flower.size) +
-                       (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
+                    (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
             }
 
-            EntityView(const Entity& e) {
+            EntityView(const Entity& e, float distance, float direction) {
                 color = e.color;
                 location = e.location;
                 status = e.status;
                 velocity = e.velocity;
                 organs = e.organs;
+                this->distance = distance;
+                this->direction = direction;
             }
         };
 

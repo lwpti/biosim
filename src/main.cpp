@@ -18,7 +18,7 @@ void draw(flecs::world& world);
 /// </summary>
 template <typename Brain>
 void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
-    simbio::World world, float minX, float minY, float maxX, float maxY);
+    simbio::World& world, float minX, float minY, float maxX, float maxY);
 
 int main() {
     using namespace simbio;
@@ -41,6 +41,10 @@ int main() {
     //systems::Eating eating;
     //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
     //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
+
+    //Register Biting system
+    systems::Biting bitingSystem;
+    bitingSystem.registerBitingSystem(world);
 
     //Register Death system.
     systems::Death::registerDeathSystem(world);
@@ -66,7 +70,7 @@ int main() {
     std::uniform_int_distribution<int> sizeDist(Flower::MIN_SIZE, Flower::MAX_SIZE);
     std::uniform_real_distribution<float> xDist(0.0f, world.width - 0.001f);
     std::uniform_real_distribution<float> yDist(0.0f, world.height - 0.001f);
-    for (int i = 0; i < 20; ++i) world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng));
+    for (int i = 0; i < 1000; ++i) world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng));
 
     InitWindow(world.width, world.height, "SimBio");
     SetTargetFPS(30);
@@ -92,7 +96,7 @@ int main() {
 
 template <typename Brain>
 void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
-    simbio::World world, float minX, float minY, float maxX, float maxY) {
+    simbio::World& world, float minX, float minY, float maxX, float maxY) {
     std::random_device rd;
     std::mt19937 rng(rd());
     std::uniform_real_distribution<float> xDist(minX, maxX);

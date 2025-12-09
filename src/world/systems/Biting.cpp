@@ -46,6 +46,7 @@ namespace simbio {
                     flecs::entity target(world.flecsWorld, bestTarget.flecsID);
 
                     if (target.has<Flower>()) {
+                        status.energy = std::min(1500.0f, status.energy + mouth.size * 20.0f);
                         auto& bucket = world.chunkGrid[bestTarget.location.chunk];
                         for (int i = 0; i < bucket.size(); ++i) {
                             if (bucket[i].flecsID == bestTarget.flecsID) {
@@ -58,8 +59,8 @@ namespace simbio {
                         return;
                     } else if (target.has<Status>()) {
                         Status& targetStatus = target.get_mut<Status>();
-                        targetStatus.health -= mouth.size * 10;
-                        status.energy += mouth.size * 5;
+                        targetStatus.health -= mouth.size * 40.0f;
+                        status.energy += mouth.size * 40.0f;
                         return;
                     }
                 }

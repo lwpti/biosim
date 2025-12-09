@@ -13,6 +13,7 @@ namespace simbio {
             world.flecsWorld.system<Location, Eyes, Status>().each([&](flecs::entity entity,
                 const Location& location, const Eyes eyes, Status status) {
                 Sight sight;
+
                 // I am temporarily putting a drain on all entity energy here
                 // This should be in its own system like "Hunger"
                 status.energy -= (0.005f + eyes.size * 0.05) * world.timeStep;
@@ -80,7 +81,7 @@ namespace simbio {
                     float angle = std::atan2(distY, distX) - yaw;
                     if (angle > PI || angle <= -PI) angle = std::atan2(std::sin(angle), std::cos(angle));
                     if (std::fabs(angle) > halfFOV) return;
-                    sight.visibleEntities.push_back(targetEntity);
+                    sight.visibleEntities.push_back({ targetEntity, std::sqrt(dist2), angle });
                 });
 
                 entity.set<Sight>(sight);

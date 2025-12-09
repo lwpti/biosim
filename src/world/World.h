@@ -45,7 +45,7 @@ namespace simbio {
 
             entity.set<Location>({ x, y, 0.0f, chunk });
             entity.set<Velocity>({ 0.0f, 0.0f });
-            entity.set<Status>({ 100.0f, 100.0f });
+            entity.set<Status>({ 1000.0f, 1000.0f });
 
             Organs organs;
             organs.body = *body;
