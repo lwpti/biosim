@@ -16,6 +16,7 @@ namespace mover {
 		virtual flecs::entity create() const;
 		virtual flecs::entity create(const flecs::entity& parent) const;
 		virtual flecs::entity create(const flecs::entity& mother, const flecs::entity& father) const;
-		virtual void think(MoverBrain& brain, const Percepts& percepts, const Organs& organs, Intents& intents) const;
+		virtual void think(MoverBrain& brain,  const Status& status, const Percepts& percepts, 
+			const Organs& organs, Intents& intents) const override;
 	};
 }

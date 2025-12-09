@@ -60,9 +60,8 @@ namespace simbio {
 			/// Given a struct of organs (and later a struct of percepts) decides on what an organism should do and
 			/// adds intent flecs components representing what it should do.
 			/// </summary>
-			/// <param name="organs">All the organ components from the organism flecs entity</param>
-			/// <param name="intents">Intent components to be added to the flecs entity</param>
-			virtual void think(Brain& brain, const Percepts& percepts, const Organs& organs, Intents& intents) const = 0;	// Percepts should be parameter too
+			virtual void think(Brain& brain, const Status& status, const Percepts& percepts, 
+				const Organs& organs, Intents& intents) const = 0;
 
 			/// <summary>
 			/// Registers Brain flecs systems. The behavior of these systems is defined by the think methods of
@@ -72,8 +71,8 @@ namespace simbio {
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
 			Organism(flecs::world& world) : world(world) {
-				world.system<Brain>()
-					.each([this](flecs::entity e, Brain& brain) 
+				world.system<Brain, Status>()
+					.each([this](flecs::entity e, Brain& brain, const Status& status) 
 						{
 							Organs organs;
 							if (const Arms* arms = e.try_get<Arms>()) organs.arms = *arms;
@@ -96,7 +95,7 @@ namespace simbio {
 
 							Intents intents;
 							
-							this->think(brain, percepts, organs, intents);
+							this->think(brain, status, percepts, organs, intents);
 
 							if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
 							if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
