@@ -100,6 +100,7 @@ namespace simbio {
 					Velocity relativeV{ 
 						velocity.x * yawX + velocity.y * yawY, -velocity.x * yawY + velocity.y * yawX 
 					};
+					
 					this->think(brain, status, percepts, relativeV, organs, intents);
 
 					if (intents.legs.has_value()) {
