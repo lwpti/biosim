@@ -102,7 +102,13 @@ namespace simbio {
 					};
 					this->think(brain, status, percepts, relativeV, organs, intents);
 
-					if (intents.legs.has_value()) e.set<LegsIntent>(*intents.legs);
+					if (intents.legs.has_value()) {
+						if (LegsRequest* request = e.try_get_mut<LegsRequest>()) {
+							request->set(*intents.legs);
+						} else {
+							e.set<LegsRequest>({ *intents.legs });
+						}
+					}
 					if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
 				});
 			}

@@ -21,17 +21,6 @@ namespace simbio {
 			/// modifying Location and Velocity.
 			/// </summary>
 			static void registerMovementSystem(World& world);
-
-		private:
-			/// <summary>
-			/// Describes a 2D movement - acceleration magnitudue, x and y components, and yaw.
-			/// </summary>
-			struct Move {
-				struct {
-					float magnitude, x, y;
-				} a;
-				float yaw;
-			};
 		};
 	}
 }

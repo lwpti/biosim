@@ -25,29 +25,10 @@ int main() {
     using namespace organism;
     
     simbio::World world{ 1024, 1024, 0.1f };
-    world.simulationSpeed = 100;
-
-    // Enforce Legs size constraints.
-    OrganObserver::registerOrganObservers(world);
-
-    // Register MoveIntent and Movement systems.
-    systems::Movement::registerMoveIntentSystem(world);
-    systems::Movement::registerMovementSystem(world);
-
-    // Register flower reproduction system.
-    systems::FlowerReproduction::registerFlowerReproductionSystem(world);
-
-    // Register eating / grabbing systems.
-    //systems::Eating eating;
-    //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
-    //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
-
-    //Register Biting system
-    systems::Biting bitingSystem;
-    bitingSystem.registerBitingSystem(world);
+    world.simulationSpeed = 1;
 
     //Register Death system.
-    systems::Death::registerDeathSystem(world);
+    //systems::Death::registerDeathSystem(world);
     systems::Death::registerFlowerDeathSystem(world);
 
     //Register Hearing system.
@@ -56,13 +37,32 @@ int main() {
     //Register Vision system.
     systems::Vision::registerVisionSystem(world);
 
+    // Enforce Legs size constraints.
+    OrganObserver::registerOrganObservers(world);
+
     // Spawn some Mover entities.
     mover::Mover mover(world.flecsWorld);
-    spawnOrganismsInBox(mover, 3, world, 100.0f, 100.0f, 200.0f, 200.0f);
+    spawnOrganismsInBox(mover, 1, world, 100.0f, 100.0f, 200.0f, 200.0f);
 
     // Spawn some Eater entities.
     eater::Eater eater(world.flecsWorld);
-    spawnOrganismsInBox(eater, 3, world, 800.0f, 800.0f, 900.0f, 900.0f);;
+    //spawnOrganismsInBox(eater, 3, world, 800.0f, 800.0f, 900.0f, 900.0f);;
+
+    // Register MoveIntent and Movement systems.
+    systems::Movement::registerMoveIntentSystem(world);
+    systems::Movement::registerMovementSystem(world);
+
+    //Register Biting system
+    systems::Biting bitingSystem;
+    bitingSystem.registerBitingSystem(world);
+
+    // Register flower reproduction system.
+    systems::FlowerReproduction::registerFlowerReproductionSystem(world);
+
+    // Register eating / grabbing systems.
+    //systems::Eating eating;
+    //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
+    //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
 
     // Spawn Flowers across the grid.
     std::random_device rd;
@@ -73,7 +73,7 @@ int main() {
     for (int i = 0; i < 1000; ++i) world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng));
 
     InitWindow(world.width, world.height, "SimBio");
-    SetTargetFPS(30);
+    SetTargetFPS(10);
     SetExitKey(KEY_ENTER);
 
     // Pause display to observe initial spawn; press any key to proceed
@@ -83,7 +83,7 @@ int main() {
         BeginDrawing();
         ClearBackground(::Color{0, 0, 0, 255});
 
-        printf("FFPS: %d\n", GetFPS());
+        printf("FPS: %d\n", GetFPS());
 
         draw(world.flecsWorld);
 
