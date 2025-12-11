@@ -14,7 +14,7 @@ namespace simbio {
     namespace organism {
         struct EntityView {
             Color color { 255, 255, 255 };
-            Status status {0.0f, 0.0f };
+            Status status { 0.0f, 0.0f };
             Organs organs;
             Velocity velocity{ 0.0f, 0.0f };
             float distance{ 0.0f };

@@ -8,7 +8,7 @@ namespace simbio {
 		struct Ears {
 			float size;
 
-			constexpr static float MIN_SIZE = 0, MAX_SIZE = 5;			
+			constexpr static float MIN_SIZE = 0.0f, MAX_SIZE = 5.0f;			
 		};
 	}
 }

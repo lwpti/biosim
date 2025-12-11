@@ -52,22 +52,22 @@ namespace simbio {
                 }
 
                 if (PI - std::fabs(yaw) < halfFOV) {
-                    int pointX = entityX - viewDist;
+                    float pointX = entityX - viewDist;
                     if (pointX < minX) minX = pointX;
                 }
 
                 if (std::fabs(0.5f * PI - yaw) < halfFOV) {
-                    int pointY = entityY - viewDist;
+                    float pointY = entityY - viewDist;
                     if (pointY < minY) minY = pointY;
                 }
 
                 if (std::fabs(-0.5f * PI - yaw) < halfFOV) {
-                    int pointY = entityY + viewDist;
+                    float pointY = entityY + viewDist;
                     if (pointY > maxY) maxY = pointY;
                 }
 
                 if (std::fabs(yaw) < halfFOV) {
-                    int pointX = entityX + viewDist;
+                    float pointX = entityX + viewDist;
                     if (pointX > maxX) maxX = pointX;
                 }
                 

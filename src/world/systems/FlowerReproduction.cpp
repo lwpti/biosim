@@ -16,7 +16,7 @@ namespace simbio {
 			static std::uniform_real_distribution<float> distanceDist{ -10.0f, 10.0f };
 			static std::uniform_int_distribution<int> sizeChangeDist{ -1, 1 };
 
-			world.flecsWorld.system("FlowerReproductionSystem").kind(flecs::OnUpdate).run([&](flecs::iter& it) {
+			world.flecsWorld.system().kind(flecs::OnUpdate).run([&](flecs::iter& it) {
 				auto& bucket = reproductionQueue[currentReproductionTick];
         		std::vector<Entity> flowers;
         		flowers.swap(bucket);   
@@ -40,11 +40,12 @@ namespace simbio {
 					int chunkX = (int)(x / World::CHUNK_SIZE);
 					int chunkY = (int)(y / World::CHUNK_SIZE);
 					int chunk = chunkY * world.chunkCols + chunkX;
-					// This is a temporary optimization which limits flower population density.
-					if (world.chunkGrid[chunk].size() >= 3) continue;
 					
 					int reproductionTime = (int)std::ceil((Flower::REPRODUCTION_TIMER_SPREAD + reproductionTimerDist(rng)) / world.timeStep);
 					reproductionQueue[(currentReproductionTick + reproductionTime) % Flower::MAX_REPRODUCTION_TICKS].push_back(flower);
+
+					// This is a temporary optimization which limits flower population density.
+					if (world.chunkGrid[chunk].size() >= 3) continue;
 
 					world.spawnFlower(childSize, x, y);
 				}

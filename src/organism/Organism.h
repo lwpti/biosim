@@ -1,13 +1,13 @@
 #pragma once
 
-#include <flecs.h>
+#include "flecs.h"
 #include <optional>
 #include <type_traits>
 #include "data/Data.h"
 #include "organs/Organs.h"
-#include <algorithm>
 #include "percepts/Percepts.h"
 #include "Entity.h"
+#include <cmath>
 
 namespace simbio {
 	namespace organism {
@@ -107,7 +107,9 @@ namespace simbio {
 						if (LegsRequest* request = e.try_get_mut<LegsRequest>()) {
 							request->set(*intents.legs);
 						} else {
-							e.set<LegsRequest>({ *intents.legs });
+							LegsRequest legsRequest;
+							legsRequest.set(*intents.legs);
+							e.set<LegsRequest>(legsRequest);
 						}
 					}
 					if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);

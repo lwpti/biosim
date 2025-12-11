@@ -11,27 +11,25 @@ namespace simbio {
     namespace systems {
         using namespace organism;
 
-        void Death::registerDeathSystem(World& world)
-        {
-            world.flecsWorld.system<Status, Location>()
-                .each([&](flecs::entity e, const Status& status, const Location& location)
-                    {
-                        if (status.energy <= 0.0f || status.health <= 0.0f) {
-                            auto& bucket = world.chunkGrid[location.chunk];
-                            for (int i = 0; i < bucket.size(); ++i) {
-                                if (bucket[i].flecsID == e.id()) {
-                                    bucket[i] = bucket.back();
-                                    bucket.pop_back();
-                                    break;
-                                }
+        void Death::registerDeathSystem(World& world) {
+            world.flecsWorld.system<Status, Location>().each(
+                [&](flecs::entity e, const Status& status, const Location& location) {
+                    if (status.energy <= 0.0f || status.health <= 0.0f) {
+                        auto& bucket = world.chunkGrid[location.chunk];
+                        for (int i = 0; i < bucket.size(); ++i) {
+                            if (bucket[i].flecsID == e.id()) {
+                                bucket[i] = bucket.back();
+                                bucket.pop_back();
+                                break;
                             }
-                            e.destruct();
                         }
-                    });
+                        e.destruct();
+                    }
+                }
+            );
         }
 
-        void Death::registerFlowerDeathSystem(World& world)
-        {
+        void Death::registerFlowerDeathSystem(World& world) {
 		    static std::mt19937 rng{ std::random_device{}() };
             static std::exponential_distribution<float> flowerDeathTimerDist{ 1.0f / DEATH_TIMER_SPREAD };
 
@@ -41,7 +39,7 @@ namespace simbio {
                     Entity{ .flecsID = entity.id(), .color = Flower::FLOWER_COLOR, .location = entity.get<Location>(), .organs = { .flower = flower } });
             });
 
-            world.flecsWorld.system("FlowerDeathSystem").kind(flecs::OnUpdate).run(
+            world.flecsWorld.system().kind(flecs::OnUpdate).run(
                 [&](flecs::iter& it) {
                 auto& bucket = deathQueue[deathTick];
                 std::vector<Entity> flowers;

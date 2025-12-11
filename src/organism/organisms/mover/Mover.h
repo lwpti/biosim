@@ -13,9 +13,9 @@ namespace mover {
 	class Mover : public Organism<MoverBrain> {
 	public:
 		Mover(flecs::world& world);
-		virtual flecs::entity create() const;
-		virtual flecs::entity create(const flecs::entity& parent) const;
-		virtual flecs::entity create(const flecs::entity& mother, const flecs::entity& father) const;
+		virtual flecs::entity create() const override;
+		virtual flecs::entity create(const flecs::entity& parent) const override;
+		virtual flecs::entity create(const flecs::entity& mother, const flecs::entity& father) const override;
 		virtual void think(MoverBrain& brain, const Status& status, const Percepts& percepts, 
 			const Velocity& velocity, const Organs& organs, Intents& intents) const override;
 	};

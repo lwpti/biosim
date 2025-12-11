@@ -8,6 +8,8 @@ namespace simbio {
 		struct Location {
 			float x, y, yaw;
 			int chunk;
+
+			static Location lerp(const Location& from, const Location& to, float t);
 		};
 	}
 }

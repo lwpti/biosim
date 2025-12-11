@@ -26,30 +26,35 @@ namespace simbio {
             Eyes eyes{ 0.0f };
             Flower flower{ 0.0f };
 
-        private:
+            private:
             template <Organ O>
-            static void registerOrganObserver(World& world) {
+            static void registerOrganObserver(World& world, float maxOversize) {
                 world.flecsWorld.observer<O>().event(flecs::OnSet).each(
-                    [](flecs::entity e, O& organ) {
+                    [maxOversize](flecs::entity e, O& organ) {
                         if (organ.size < O::MIN_SIZE) {
                             organ.size = O::MIN_SIZE;
                         }
-                        else if (organ.size > O::MAX_SIZE) {
-                            organ.size = O::MAX_SIZE;
+                        else {
+                            float maxSize = O::MAX_SIZE;
+                            const Body* body = e.try_get<Body>();
+                            if (body) maxSize = std::min(body->size * maxOversize, maxSize);
+                            if (organ.size > maxSize) {
+                                organ.size = maxSize;
+                            }
                         }
                     }
                 );
             }
 
-        public:
+            public:
             static void registerOrganObservers(World& world) {
-                OrganObserver::registerOrganObserver<Arms>(world);
-                OrganObserver::registerOrganObserver<Body>(world);
-                OrganObserver::registerOrganObserver<Ears>(world);
-                OrganObserver::registerOrganObserver<Eyes>(world);
-                OrganObserver::registerOrganObserver<Flower>(world);
-                OrganObserver::registerOrganObserver<Legs>(world);
-                OrganObserver::registerOrganObserver<Mouth>(world);
+                OrganObserver::registerOrganObserver<Arms>(world, 1.5f);
+                OrganObserver::registerOrganObserver<Body>(world, 1.0f);
+                OrganObserver::registerOrganObserver<Ears>(world, 2.5f);
+                OrganObserver::registerOrganObserver<Eyes>(world, 2.5f);
+                OrganObserver::registerOrganObserver<Flower>(world, 1.5f);
+                OrganObserver::registerOrganObserver<Legs>(world, 1.5f);
+                Mouth::registerOrganObserver(world, 1.5f);
             }
         };
     }

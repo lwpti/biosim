@@ -7,7 +7,6 @@
 #include "Legs.h"
 #include "Mouth.h"
 #include "Flower.h"
-#include <optional>
 
 namespace simbio {
     namespace organism {
@@ -23,14 +22,6 @@ namespace simbio {
             Ears ears{ 0.0f };
             Eyes eyes{ 0.0f };
             Flower flower{ 0.0f };
-        };
-
-        /// <summary>
-        /// Convenient structure for think method
-        /// </summary>
-        struct Intents {
-            std::optional<LegsIntent> legs;
-            std::optional<BiteIntent> bite;
         };
     }
 }

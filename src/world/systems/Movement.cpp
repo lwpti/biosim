@@ -3,14 +3,14 @@
 #include "data/Data.h"
 #include "Entity.h"
 #include "raylib.h"
-#include <string>
+#include <algorithm>
 
 namespace simbio {
     namespace systems {
         using namespace organism;
 
         void Movement::registerMoveIntentSystem(World& world) {
-            world.flecsWorld.system<Legs, LegsRequest>("MoveIntentSystem")
+            world.flecsWorld.system<Legs, LegsRequest>()
                 .each([](flecs::entity e, const Legs& legs, LegsRequest& request) {
                 // Max yaw/s = 3PI
                 float maxYaw = 3.0f * PI * legs.size / Legs::MAX_SIZE;
@@ -33,7 +33,7 @@ namespace simbio {
         }
 
         void Movement::registerMovementSystem(World& world) {
-            world.flecsWorld.system<LegsRequest, Location, Velocity, Legs, Status>("MovementSystem")
+            world.flecsWorld.system<LegsRequest, Location, Velocity, Legs, Status>()
                 .each([&](flecs::entity e, LegsRequest& move, Location& location, 
                     Velocity& v, const Legs& legs, Status& status) {
                 // TODO: Improve drag.

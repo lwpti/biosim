@@ -1,10 +1,9 @@
 #include "World.h"
 #include "Entity.h"
-#include <random>
 
 namespace simbio {
     World::World(int width, int height, float timeStep) 
-        : width(width - width % 16), height(height - height % 16), 
+        : width(width - width % CHUNK_SIZE), height(height - height % CHUNK_SIZE), 
         timeStep(timeStep), chunkCols(width / CHUNK_SIZE), 
         chunkRows(height / CHUNK_SIZE), chunkGrid(chunkCols * chunkRows) {
     }
@@ -87,8 +86,8 @@ namespace simbio {
 
     bool World::overlapsEntity(float x, float y, float radius) {
         int chunkX = (int)(x / CHUNK_SIZE);
-		int chunkY = (int)(y / CHUNK_SIZE);
-		int chunk = chunkY * chunkCols + chunkX;
+        int chunkY = (int)(y / CHUNK_SIZE);
+        int chunk = chunkY * chunkCols + chunkX;
 
         for (int dy = -1; dy <= 1; ++dy) {
             int adjY = chunkY + dy;

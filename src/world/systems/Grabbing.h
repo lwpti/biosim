@@ -4,7 +4,8 @@
 
 namespace simbio {
     namespace systems {
-            class Grabbing {
+        class Grabbing {
+            public:
             /// <summary>
             /// Registers system that processes ArmsIntent and performs grabbing.
             /// One grabber can grab at most one target, but a target can be grabbed

@@ -6,9 +6,7 @@
 #include "data/Location.h"
 #include "data/Status.h"
 #include "organs/Flower.h"
-#include "organs/Arms.h"
 #include "organs/Mouth.h"
-#include "percepts/Touch.h"
 #include "Entity.h"
 
 namespace simbio {
@@ -16,37 +14,50 @@ namespace simbio {
 
         using namespace organism;
 
-        void Biting::registerBitingSystem(World& world)
-        {
-            world.flecsWorld.system<Mouth, BiteIntent, Location, Status>("BitingSystem").each(
-                [&](flecs::entity entity, Mouth& mouth, BiteIntent biteIntent, Location& location, Status& status) {
-                    status.energy -= 0.5f;
+        void Biting::registerBitingSystem(World& world) {
+            world.flecsWorld.system<Mouth, Body, BiteIntent, Location, Status>().each(
+                [&](flecs::entity entity, const Mouth& mouth, const Body& body, 
+                    const BiteIntent& biteIntent, const Location& location, Status& status) {
+                    status.energy -= BITE_ENERGY_COST * mouth.size / Mouth::MAX_SIZE 
+                        * mouth.power / Mouth::MAX_POWER * biteIntent.strength;
 
-                    const float range = mouth.size * 0.4f;
-                    const float range2 = range * range;
+                    const float minDist2 = body.size * body.size / 4.0f;
+                    const float reach = body.size + mouth.size;
+                    const float maxDist2 = reach * reach;
+
+                    float forwardX = std::cos(location.yaw);
+                    float forwardY = std::sin(location.yaw);
 
                     Entity bestTarget;
-                    float bestDist2 = range2;
+                    float bestDist2 = maxDist2;
 
                     world.forNearbyEntities(location, [&](Entity& target) {
                         if (entity.id() == target.flecsID) return;
 
-                        const float dx = target.location.x - location.x;
-                        const float dy = target.location.y - location.y;
-                        const float dist2 = dx * dx + dy * dy;
+                        const float distX = target.location.x - location.x;
+                        const float distY = target.location.y - location.y;
+                        const float dist2 = distX * distX + distY * distY;
 
-                        if (dist2 < bestDist2) {
-                            bestDist2 = dist2;
-                            bestTarget = target;
-                        }
+                        if (dist2 <= minDist2) return;
+                        if (dist2 >= bestDist2) return;
+
+                        // Note: this is dot * dist, technically
+                        float dot = forwardX * distX + forwardY * distY;
+
+                        if (dot <= 0.0f) return; 
+                        if (dot * dot < MIN_BITE_DOT2 * dist2) return;
+
+                        bestDist2 = dist2;
+                        bestTarget = target;
                     });
 
-                    if (bestDist2 == range2) return;
+                    if (bestDist2 == maxDist2) return;
 
                     flecs::entity target(world.flecsWorld, bestTarget.flecsID);
 
-                    if (target.has<Flower>()) {
-                        status.energy = std::min(1500.0f, status.energy + mouth.size * 20.0f);
+                    if (Flower* flower = target.try_get_mut<Flower>()) {
+                        status.energy += flower->size * Status::FLOWER_ENERGY;
+                        status.energy = std::min(Status::MAX_ENERGY * body.size / Body::MAX_SIZE, status.energy);
                         auto& bucket = world.chunkGrid[bestTarget.location.chunk];
                         for (int i = 0; i < bucket.size(); ++i) {
                             if (bucket[i].flecsID == bestTarget.flecsID) {
@@ -57,10 +68,13 @@ namespace simbio {
                         }
                         target.destruct();
                         return;
-                    } else if (target.has<Status>()) {
-                        Status& targetStatus = target.get_mut<Status>();
-                        targetStatus.health -= mouth.size * 40.0f;
-                        status.energy += mouth.size * 40.0f;
+                    } else if (Status* targetStatus = target.try_get_mut<Status>()) {
+                        float strength = std::clamp(biteIntent.strength, 0.0f, 1.0f);
+                        float damage = mouth.power * mouth.size * world.timeStep * strength;
+                        // Damage < 0.1 does not break the skin (1.0f * timeStep)
+                        if (damage < world.timeStep) return;
+                        targetStatus->health -= damage;
+                        status.energy += damage * Status::BITE_ENERGY;
                         return;
                     }
                 }

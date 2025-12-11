@@ -10,7 +10,7 @@
 namespace simbio {
     class World {
         public:
-        static const int CHUNK_SIZE = 16;
+        static constexpr int CHUNK_SIZE = 16;
 
         flecs::world flecsWorld;
 
@@ -45,7 +45,8 @@ namespace simbio {
 
             entity.set<Location>({ x, y, 0.0f, chunk });
             entity.set<Velocity>({ 0.0f, 0.0f });
-            entity.set<Status>({ 1000.0f, 1000.0f });
+            float sizeRatio = body->size / Body::MAX_SIZE;
+            entity.set<Status>({ sizeRatio * Status::MAX_HEALTH, sizeRatio * Status::MAX_ENERGY });
 
             Organs organs;
             organs.body = *body;
@@ -74,8 +75,6 @@ namespace simbio {
             const std::function<void(organism::Entity&)>& doThis);
 
         private:
-        const float FLOWER_SPAWN_BOX_SIZE = 256;
-
         bool overlapsEntity(float x, float y, float radius);
     };
 }

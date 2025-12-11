@@ -9,7 +9,7 @@ namespace simbio {
 		struct Body {
 			float size;
 
-			constexpr static float MIN_SIZE = 0, MAX_SIZE = 5;
+			constexpr static float MIN_SIZE = 1.0f, MAX_SIZE = 5.0f;
 		};
 	}
 }

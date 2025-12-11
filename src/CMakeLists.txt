@@ -13,8 +13,13 @@ add_executable(SimBio
     world/systems/Hearing.cpp
     world/systems/Vision.cpp
     world/systems/Grabbing.cpp
+
     world/World.cpp
 
+    organism/organs/Mouth.cpp
+
+    organism/data/Location.cpp
+    
     organism/organisms/eater/Eater.cpp 
     organism/organisms/mover/Mover.cpp
 )

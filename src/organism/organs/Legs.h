@@ -9,8 +9,12 @@ namespace simbio {
 		/// </summary>
 		struct Legs {
 			float size;
-			
-			constexpr static float MIN_SIZE = 0, MAX_SIZE = 5;
+			float forwardPower = 1.0f;
+			float backwardPower = 1.0f;
+			float leftwardPower = 1.0f;
+			float rightwardPower = 1.0f;
+
+			constexpr static float MIN_SIZE = 0.0f, MAX_SIZE = 5.0f;
 		};
 
 		/// <summary>
@@ -34,15 +38,6 @@ namespace simbio {
 			} a;
 			float yaw;
 			bool valid = false;
-
-			LegsRequest() = default;
-
-			LegsRequest(const LegsIntent& intent)
-				: yaw(intent.yaw) {
-				a.x = intent.a.x;
-				a.y = intent.a.y;
-				a.magnitude = std::sqrt(a.x * a.x + a.y * a.y);
-			}
 
 			void set(const LegsIntent& intent) {
 				yaw = intent.yaw;

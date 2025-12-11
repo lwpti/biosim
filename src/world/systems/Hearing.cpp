@@ -7,7 +7,7 @@ namespace simbio {
 	namespace systems {
 		using namespace organism;
 		void Hearing::registerHearingSystem(World& world) {
-			world.flecsWorld.system<Body, Legs, Location, Velocity>("HearingSystem").each(
+			world.flecsWorld.system<Body, Legs, Location, Velocity>().each(
 				[&](flecs::entity source, const Body& body, 
 					const Legs& legs, const Location& location, const Velocity& velocity) {
 					float speed2 = velocity.x * velocity.x + velocity.y * velocity.y;
