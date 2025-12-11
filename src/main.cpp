@@ -26,7 +26,7 @@ static constexpr int FPS = 30;
 // Do not change this
 static constexpr float TIME_STEP = 0.1f;
 // You can change this to speed up the sim!
-static constexpr int SIM_SPEED = 3;
+static constexpr int SIM_SPEED = 6;
 static constexpr int WORLD_WIDTH = 1024;
 static constexpr int WORLD_HEIGHT = 1024;
 
