@@ -26,7 +26,7 @@ static constexpr int FPS = 30;
 // Do not change this
 static constexpr float TIME_STEP = 0.1f;
 // You can change this to speed up the sim!
-static constexpr int SIM_SPEED = 1;
+static constexpr int SIM_SPEED = 100;
 static constexpr int WORLD_WIDTH = 1024;
 static constexpr int WORLD_HEIGHT = 1024;
 
@@ -74,7 +74,7 @@ int main() {
         while (!world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng)));
 
     // Let the flower population stabilize
-    for (int i = 0; i < 100000; i++) world.progress();
+    for (int i = 0; i < 100000 / SIM_SPEED; i++) world.progress();
 
     // Spawn some Mover entities.
     mover::Mover mover(world.flecsWorld);

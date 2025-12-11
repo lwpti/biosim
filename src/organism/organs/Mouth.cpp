@@ -4,15 +4,15 @@
 
 namespace simbio {
     namespace organism {
-        void Mouth::registerOrganObserver(World& world, float maxOversize) {
+        void Mouth::registerMouthObserver(World& world) {
             world.flecsWorld.observer<Mouth>().event(flecs::OnSet).each(
-                [maxOversize](flecs::entity e, Mouth& mouth) {
+                [](flecs::entity e, Mouth& mouth) {
                     if (mouth.size < MIN_SIZE) {
                         mouth.size = MIN_SIZE;
                     }
                     else {
                         const Body& body = e.get<Body>();
-                        float maxSize = std::min(body.size * maxOversize, MAX_SIZE);
+                        float maxSize = std::min(body.size * MAX_OVERSIZE, MAX_SIZE);
                         if (mouth.size > maxSize) {
                             mouth.size = maxSize;
                         }

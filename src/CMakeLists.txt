@@ -17,6 +17,7 @@ add_executable(SimBio
     world/World.cpp
 
     organism/organs/Mouth.cpp
+    organism/organs/Legs.cpp
 
     organism/data/Location.cpp
     

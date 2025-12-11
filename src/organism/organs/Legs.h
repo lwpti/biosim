@@ -1,7 +1,11 @@
 #pragma once
+
 #include <cmath>
+#include <algorithm>
 
 namespace simbio {
+	class World;
+
 	namespace organism {
 		/// <summary>
 		/// flecs component; Legs size determines speed and will determine success
@@ -15,6 +19,9 @@ namespace simbio {
 			float rightwardPower = 1.0f;
 
 			constexpr static float MIN_SIZE = 0.0f, MAX_SIZE = 5.0f;
+			constexpr static float MAX_OVERSIZE = 1.5f;
+
+			static void registerLegsObserver(World& world);
 		};
 
 		/// <summary>
@@ -23,8 +30,10 @@ namespace simbio {
 		/// </summary>
 		struct LegsIntent {
 			struct {
-				float x, y;
+				// The desired acceleration componenets relative to current Location.yaw
+				float mag, dir;
 			} a;
+			// The desired rate of yaw in rad/s
 			float yaw;
 		};
 
@@ -34,16 +43,17 @@ namespace simbio {
 		/// </summary>
 		struct LegsRequest {
 			struct {
-				float x, y, magnitude;
+				float x, y, mag, dir;
 			} a;
 			float yaw;
 			bool valid = false;
 
 			void set(const LegsIntent& intent) {
 				yaw = intent.yaw;
-				a.x = intent.a.x;
-				a.y = intent.a.y;
-				a.magnitude = std::sqrt(a.x * a.x + a.y * a.y);
+				a.x = intent.a.mag * std::cos(intent.a.dir);
+				a.y = intent.a.mag * std::sin(intent.a.dir);
+				a.mag = intent.a.mag;
+				a.dir = intent.a.dir;
 			}
 		};
 	}

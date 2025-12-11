@@ -11,48 +11,65 @@ namespace simbio {
 
         void Movement::registerMoveIntentSystem(World& world) {
             world.flecsWorld.system<Legs, LegsRequest>()
-                .each([](flecs::entity e, const Legs& legs, LegsRequest& request) {
-                // Max yaw/s = 3PI
-                float maxYaw = 3.0f * PI * legs.size / Legs::MAX_SIZE;
-
-                float ax = request.a.x;
-                float ay = request.a.y;
-                float a = std::sqrt(ax * ax + ay * ay);
-                float maxA = legs.size / Legs::MAX_SIZE * 250.0f;
-                if (a > maxA) {
-                    float scale = maxA / a;
-                    a = maxA;
-                    request.a.x *= scale;
-                    request.a.y *= scale;
-                }
-
-                request.a.magnitude = a;
-                
+                .each([&](flecs::entity e, const Legs& legs, LegsRequest& request) {
+                float maxYaw = MAX_YAW * legs.size / Legs::MAX_SIZE * world.timeStep;
                 request.yaw = std::clamp(request.yaw, -maxYaw, maxYaw);
             });
         }
 
         void Movement::registerMovementSystem(World& world) {
             world.flecsWorld.system<LegsRequest, Location, Velocity, Legs, Status>()
-                .each([&](flecs::entity e, LegsRequest& move, Location& location, 
-                    Velocity& v, const Legs& legs, Status& status) {
-                // TODO: Improve drag.
-                //v.x *= (1.0f - 0.1 * world.timeStep);
-                //v.y *= (1.0f - 0.1 * world.timeStep);
+                .each([&](flecs::entity e, LegsRequest& request, Location& location, 
+                    Velocity& v, const Legs& legs, Status& status) {                
+                float vMag = std::sqrt(v.x * v.x + v.y * v.y);
+                if (vMag > 0.0f) {
+                    float uVX = v.x / vMag;
+                    float uVY = v.y / vMag;
+                    float a = request.a.x * uVX + request.a.y * uVY;
+                    float aX = a * uVX;
+                    float aY = a * uVY;
+                    if (a > 0.0f) {
+                        float maxA = MAX_A * legs.size / Legs::MAX_SIZE;
+                        if (a > maxA) {
+                            float scale = maxA / a;
+                            aX *= scale;
+                            aY *= scale;
+                        }
+                    } else if (a < 0.0f){
+                        float maxDA = MAX_DA * legs.size / Legs::MAX_SIZE;
+                        if (a < maxDA) {
+                            float scale = maxDA / a;
+                            aX *= scale;
+                            aY *= scale;
+                        }
+                    }
+                    float turnX = request.a.x - aX;
+                    float turnY = request.a.y - aY;
+                    float maxTurnA = MAX_TA * legs.size / Legs::MAX_SIZE;
+                    float turnMag = std::sqrt(turnX * turnX + turnY * turnY);
+                    if (turnMag > maxTurnA) {
+                        float scale = maxTurnA / turnMag;
+                        turnX *= scale;
+                        turnY *= scale;
+                    }
+                    request.a.x = aX + turnX;
+                    request.a.y = aY + turnY;
+                }
+
                 float vx0 = v.x;
                 float vy0 = v.y;
-                v.x += world.timeStep * move.a.x;
-                v.y += world.timeStep * move.a.y;
+                v.x += world.timeStep * request.a.x;
+                v.y += world.timeStep * request.a.y;
                 float s2 = v.x * v.x + v.y * v.y;
-                float maxS = legs.size / Legs::MAX_SIZE * 250.0f;
-                if (s2 > maxS * maxS) {
-                    float s = std::sqrt(s2);
+                float maxS = legs.size / Legs::MAX_SIZE * MAX_S;
+                float s = std::sqrt(s2);
+                if (s2 > maxS) {
                     float scale = maxS / s;
                     v.x *= scale;
                     v.y *= scale;
                     float dvx = v.x - vx0;
                     float dvy = v.y - vy0;
-                    move.a.magnitude = std::sqrt(dvy * dvy + dvx * dvx) / world.timeStep;
+                    request.a.mag = std::sqrt(dvy * dvy + dvx * dvx) / world.timeStep;
                 }
 
                 location.x += world.timeStep * (vx0 + v.x) / 2.0f;
@@ -64,20 +81,16 @@ namespace simbio {
                 location.y = location.y >= world.height ? 0.0f : location.y;
                 location.y = location.y < 0.0f ? world.height - 0.0001f : location.y;
                 
-                location.yaw += move.yaw * world.timeStep;
+                float dYaw = request.yaw * world.timeStep;
+                location.yaw += dYaw;
+                status.energy -= YAW_ENERGY_COST * legs.size / Legs::MAX_SIZE * dYaw / MAX_YAW;
                 if (location.yaw > PI || location.yaw <= -PI) 
                     location.yaw = std::atan2(std::sin(location.yaw), std::cos(location.yaw));
 
-                if (move.a.magnitude > 0.6f * legs.size) {
-                    float overA = move.a.magnitude - 0.6f * legs.size;
-                    status.energy -= (0.6f * legs.size + (overA * overA)) / 10.0f * world.timeStep;
-                }
-                else {
-                    // Max A = legs.size
-                    status.energy -= move.a.magnitude / 10.0f * world.timeStep;
-                }
+                status.energy -= MOVE_ENERGY_COST * legs.size / Legs::MAX_SIZE * s / maxS * world.timeStep;
                 
-                int newChunk = (int)(location.y / World::CHUNK_SIZE) * world.chunkCols + (int)(location.x / World::CHUNK_SIZE);
+                int newChunk = (int)(location.y / World::CHUNK_SIZE) * world.chunkCols 
+                    + (int)(location.x / World::CHUNK_SIZE);
                 auto& bucket = world.chunkGrid[location.chunk];
                 for (int i = 0; i < bucket.size(); ++i) {
                     if (bucket[i].flecsID == e.id()) {

@@ -14,8 +14,9 @@ namespace simbio {
 
 			constexpr static float MIN_SIZE = 0.0f, MAX_SIZE = 5.0f;
 			constexpr static float MIN_POWER = 1.0f, MAX_POWER = 5.0f;
+			constexpr static float MAX_OVERSIZE = 1.5f;
 
-			static void registerOrganObserver(World& world, float maxOversize);
+			static void registerMouthObserver(World& world);
 		};
 
 		/// <summary>

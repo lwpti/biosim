@@ -53,8 +53,8 @@ namespace simbio {
                 OrganObserver::registerOrganObserver<Ears>(world, 2.5f);
                 OrganObserver::registerOrganObserver<Eyes>(world, 2.5f);
                 OrganObserver::registerOrganObserver<Flower>(world, 1.5f);
-                OrganObserver::registerOrganObserver<Legs>(world, 1.5f);
-                Mouth::registerOrganObserver(world, 1.5f);
+                Mouth::registerMouthObserver(world);
+                Legs::registerLegsObserver(world);
             }
         };
     }
