@@ -103,7 +103,7 @@ namespace simbio {
                 for (int i = 0; i < bucket.size(); ++i) {
                     float distanceX = bucket[i].location.x - x;
                     float distanceY = bucket[i].location.y - y;
-                    float minDistance = radius + 2.0f + bucket[i].getSize() * 0.5f;
+                    float minDistance = radius + 0.1f + bucket[i].getSize() * 0.5f;
 
                     if (distanceX * distanceX + distanceY * distanceY <= minDistance * minDistance) {
                         return true;

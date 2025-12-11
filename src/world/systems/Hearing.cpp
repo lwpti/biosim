@@ -59,9 +59,6 @@ namespace simbio {
 									heard->freq = (heard->freq + freq) / 2;
 									heard->direction = std::atan2(soundY, soundX);
 								}
-								Status& status = listener.get_mut<Status>();
-								status.energy -= (0.01f * ears->size) * world.timeStep;
-								entity.status = status;
 							}
 						}
 					}

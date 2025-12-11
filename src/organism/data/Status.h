@@ -9,7 +9,7 @@ namespace simbio {
 			float health, energy;
 
 			constexpr static float MAX_HEALTH = 100.0f;
-			constexpr static float MAX_ENERGY = 100000.0f;
+			constexpr static float MAX_ENERGY = 100.0f;
 			constexpr static float BITE_ENERGY = MAX_ENERGY / MAX_HEALTH;
 			constexpr static float FLOWER_ENERGY = MAX_ENERGY / 5.0f;
 		};

@@ -18,8 +18,9 @@ namespace simbio {
             world.flecsWorld.system<Mouth, Body, BiteIntent, Location, Status>().each(
                 [&](flecs::entity entity, const Mouth& mouth, const Body& body, 
                     const BiteIntent& biteIntent, const Location& location, Status& status) {
+                    float strength = std::clamp(biteIntent.strength, 0.0f, 1.0f);
                     status.energy -= BITE_ENERGY_COST * mouth.size / Mouth::MAX_SIZE 
-                        * mouth.power / Mouth::MAX_POWER * biteIntent.strength;
+                        * mouth.power / Mouth::MAX_POWER * biteIntent.strength * world.timeStep;
 
                     const float minDist2 = body.size * body.size / 4.0f;
                     const float reach = body.size + mouth.size;
@@ -69,7 +70,6 @@ namespace simbio {
                         target.destruct();
                         return;
                     } else if (Status* targetStatus = target.try_get_mut<Status>()) {
-                        float strength = std::clamp(biteIntent.strength, 0.0f, 1.0f);
                         float damage = mouth.power * mouth.size * world.timeStep * strength;
                         // Damage < 0.1 does not break the skin (1.0f * timeStep)
                         if (damage < world.timeStep) return;

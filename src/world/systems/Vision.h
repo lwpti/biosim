@@ -15,6 +15,8 @@ namespace simbio {
             
             static constexpr float FOV = 140;
             static constexpr float RANGE_MULT = 16;
+            // Eyes consumes ~1% of energy if used continuously, and total usage ~= 2/s
+            static constexpr float VISION_ENERGY_COST = 0.02f;
         };
     }
 }

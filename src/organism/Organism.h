@@ -72,7 +72,7 @@ namespace simbio {
 			/// <param name="world">flecs world which the system is registed in</param>
 			Organism(flecs::world& world) : world(world) {
 				world.system<Brain, Status, Location, Velocity>()
-					.each([this](flecs::entity e, Brain& brain, const Status& status, 
+					.each([this](flecs::entity e, Brain& brain, Status& status, 
 						const Location& location, const Velocity& velocity) {
 					Organs organs;
 					if (const Arms* arms = e.try_get<Arms>()) organs.arms = *arms;
@@ -103,6 +103,9 @@ namespace simbio {
 					
 					this->think(brain, status, percepts, relativeV, organs, intents);
 
+					// Hard coded energy cost :(
+					status.energy -= THINK_ENERGY_COST * 0.1f;
+
 					if (intents.legs.has_value()) {
 						if (LegsRequest* request = e.try_get_mut<LegsRequest>()) {
 							request->set(*intents.legs);
@@ -115,6 +118,8 @@ namespace simbio {
 					if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
 				});
 			}
+
+			static constexpr float THINK_ENERGY_COST = 0.01f;
 
 			flecs::world& world;
 		};

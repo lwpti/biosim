@@ -14,9 +14,8 @@ namespace simbio {
                 const Location& location, const Eyes eyes, Status status) {
                 Sight sight;
 
-                // I am temporarily putting a drain on all entity energy here
-                // This should be in its own system like "Hunger"
-                status.energy -= (0.005f + eyes.size * 0.05) * world.timeStep;
+                status.energy -= VISION_ENERGY_COST * eyes.size / Eyes::MAX_SIZE * world.timeStep;
+                
                 if (eyes.size == 0) return;
 
                 float entityX = location.x;

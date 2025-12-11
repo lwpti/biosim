@@ -15,7 +15,7 @@ namespace simbio {
 			Organs organs;
 
 			float getSize() const {
-				return (std::max)(organs.body.size, organs.flower.size) + (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
+				return (std::max)(organs.body.size, organs.flower.size);
 			}
 		};
     }
