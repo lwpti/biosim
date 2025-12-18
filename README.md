@@ -1,7 +1,5 @@
 # SimBio
 
----
-
 ## Setup Instructions for Visual Studio (2022+)
 
 0) Make sure you have Development tools with C++ installed in Visual Studio
