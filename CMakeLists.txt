@@ -1,33 +1,44 @@
 cmake_minimum_required(VERSION 3.28)
-project(SimBio)
+project(SimBio LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(RAYLIB_VERSION 5.5)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 
-add_compile_definitions(FLECS_CPP_NO_ENUM_REFLECTION)
+add_subdirectory(external/raylib)
+add_subdirectory(external/flecs)
 
-include(FetchContent)
+add_executable(SimBio)
 
-find_package(raylib ${RAYLIB_VERSION} QUIET)
-if (NOT raylib_FOUND)
-    message(STATUS "raylib ${RAYLIB_VERSION} not found - fetching with FetchContent")
+target_sources(SimBio PRIVATE
+    src/main.cpp
 
-    FetchContent_Declare(
-        raylib
-        DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
-    )
+    src/world/systems/Movement.cpp
+    src/world/systems/Death.cpp
+    src/world/systems/FlowerReproduction.cpp
+    src/world/systems/Biting.cpp
+    src/world/systems/Hearing.cpp
+    src/world/systems/Vision.cpp
+    src/world/systems/Grabbing.cpp
 
-    FetchContent_MakeAvailable(raylib)
-endif()
+    src/world/World.cpp
 
-FetchContent_Declare(
-    flecs
-    GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
-    GIT_TAG v4.1.2
+    src/organism/organs/Mouth.cpp
+    src/organism/organs/Legs.cpp
+
+    src/organism/data/Location.cpp
+
+    src/organism/organisms/eater/Eater.cpp
+    src/organism/organisms/mover/Mover.cpp
 )
-FetchContent_MakeAvailable(flecs)
 
-add_subdirectory(src)
+target_include_directories(SimBio PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/organism>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/world>
+)
+
+target_link_libraries(SimBio PRIVATE flecs_static raylib)
+
+target_compile_definitions(SimBio PRIVATE FLECS_CPP_NO_ENUM_REFLECTION)
