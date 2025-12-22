@@ -48,7 +48,11 @@ namespace simbio {
 
 								Sound* heard = listener.try_get_mut<Sound>();
 								if (heard == nullptr) listener.set<Sound>({ volume, freq, direction });
-								else {
+								else if (heard->volume < 0.0001f) {
+									heard->volume = volume;
+									heard->freq = freq;
+									heard->direction = direction;
+								} else  {
 									float sound1X = heard->volume * std::cos(heard->direction);
 									float sound1Y = heard->volume * std::sin(heard->direction);
 									float sound2X = volume * std::cos(direction);

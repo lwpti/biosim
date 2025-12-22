@@ -6,28 +6,31 @@
 #include "Organism.h"
 #include <vector>
 #include <functional>
+#include <raylib.h>
 
 namespace simbio {
     class World {
         public:
         static constexpr int CHUNK_SIZE = 16;
+        static constexpr int WIDTH = 1024;
+        static constexpr int HEIGHT = 1024;
 
         flecs::world flecsWorld;
 
         int simulationSpeed = 1;
 
-        const int width;
-        const int height;
         const float timeStep;
         const int chunkCols;
         const int chunkRows;
 
         std::vector<std::vector<organism::Entity>> chunkGrid;
 
-        World(int width, int height, float timeStep);
+        World(float timeStep);
 
         bool spawnFlower(float size, float x, float y);
         void progress();
+        static Vector2 distance(const simbio::organism::Location& from, const simbio::organism::Location& to);
+        static Vector2 distance(float fromX, float fromY, float toX, float toY);
 
         template <typename Brain>
         bool spawnOrganism(organism::Organism<Brain>& organism, float x, float y) {

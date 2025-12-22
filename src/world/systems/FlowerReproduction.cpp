@@ -32,10 +32,10 @@ namespace simbio {
 				
 					float x = flower.location.x + std::copysign(sizeOffset, xOffset) + xOffset;
 					float y = flower.location.y + std::copysign(sizeOffset, yOffset) + yOffset;
-					x = x >= world.width ? 0.0f : x;
-					y = y >= world.height ? 0.0f : y;
-					x = x < 0.0f ? world.width - 0.0001f : x;
-					y = y < 0.0f ? world.height - 0.0001f : y;
+					x = x >= World::WIDTH ? 0.0f : x;
+					y = y >= World::HEIGHT ? 0.0f : y;
+					x = x < 0.0f ? World::WIDTH - 0.0001f : x;
+					y = y < 0.0f ? World::HEIGHT - 0.0001f : y;
 
 					int chunkX = (int)(x / World::CHUNK_SIZE);
 					int chunkY = (int)(y / World::CHUNK_SIZE);

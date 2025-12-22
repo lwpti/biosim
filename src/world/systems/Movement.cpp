@@ -12,7 +12,7 @@ namespace simbio {
         void Movement::registerMoveIntentSystem(World& world) {
             world.flecsWorld.system<Legs, LegsRequest>()
                 .each([&](flecs::entity e, const Legs& legs, LegsRequest& request) {
-                float maxYaw = MAX_YAW * legs.size / Legs::MAX_SIZE * world.timeStep;
+                float maxYaw = MAX_YAW * legs.size / Legs::MAX_SIZE;
                 request.yaw = std::clamp(request.yaw, -maxYaw, maxYaw);
             });
         }
@@ -20,7 +20,17 @@ namespace simbio {
         void Movement::registerMovementSystem(World& world) {
             world.flecsWorld.system<LegsRequest, Location, Velocity, Legs, Status>()
                 .each([&](flecs::entity e, LegsRequest& request, Location& location, 
-                    Velocity& v, const Legs& legs, Status& status) {                
+                    Velocity& v, const Legs& legs, Status& status) {  
+
+                float yawX = std::cos(location.yaw);
+                float yawY = std::sin(location.yaw);
+                
+                float aX = request.a.x;
+                float aY = request.a.y;
+
+                request.a.x = aX * yawX - aY * yawY;
+                request.a.y = aX * yawY + aY * yawX;
+
                 float vMag = std::sqrt(v.x * v.x + v.y * v.y);
                 if (vMag > 0.0f) {
                     float uVX = v.x / vMag;
@@ -29,14 +39,14 @@ namespace simbio {
                     float aX = a * uVX;
                     float aY = a * uVY;
                     if (a > 0.0f) {
-                        float maxA = MAX_A * legs.size / Legs::MAX_SIZE;
+                        float maxA = MAX_AXIS_A * legs.size / Legs::MAX_SIZE;
                         if (a > maxA) {
                             float scale = maxA / a;
                             aX *= scale;
                             aY *= scale;
                         }
                     } else if (a < 0.0f){
-                        float maxDA = MAX_DA * legs.size / Legs::MAX_SIZE;
+                        float maxDA = MAX_AXIS_DA * legs.size / Legs::MAX_SIZE;
                         if (a < maxDA) {
                             float scale = maxDA / a;
                             aX *= scale;
@@ -45,7 +55,7 @@ namespace simbio {
                     }
                     float turnX = request.a.x - aX;
                     float turnY = request.a.y - aY;
-                    float maxTurnA = MAX_TA * legs.size / Legs::MAX_SIZE;
+                    float maxTurnA = MAX_AXIS_TA * legs.size / Legs::MAX_SIZE;
                     float turnMag = std::sqrt(turnX * turnX + turnY * turnY);
                     if (turnMag > maxTurnA) {
                         float scale = maxTurnA / turnMag;
@@ -63,7 +73,7 @@ namespace simbio {
                 float s2 = v.x * v.x + v.y * v.y;
                 float maxS = legs.size / Legs::MAX_SIZE * MAX_S;
                 float s = std::sqrt(s2);
-                if (s2 > maxS) {
+                if (s > maxS) {
                     float scale = maxS / s;
                     v.x *= scale;
                     v.y *= scale;
@@ -73,13 +83,13 @@ namespace simbio {
                 }
 
                 location.x += world.timeStep * (vx0 + v.x) / 2.0f;
-                location.x = location.x >= world.width ? 0.0f : location.x;
-                location.x = location.x < 0.0f ? world.width - 0.0001f : location.x;
+                location.x = location.x >= World::WIDTH ? 0.0f : location.x;
+                location.x = location.x < 0.0f ? World::WIDTH - 0.0001f : location.x;
                 
 
                 location.y += world.timeStep * (vy0 + v.y) / 2.0f;
-                location.y = location.y >= world.height ? 0.0f : location.y;
-                location.y = location.y < 0.0f ? world.height - 0.0001f : location.y;
+                location.y = location.y >= World::HEIGHT ? 0.0f : location.y;
+                location.y = location.y < 0.0f ? World::HEIGHT - 0.0001f : location.y;
                 
                 float dYaw = request.yaw * world.timeStep;
                 location.yaw += dYaw;
