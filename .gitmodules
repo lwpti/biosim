@@ -1,6 +1,6 @@
 [submodule "flecs"]
-	path = flecs
+	path = external/flecs
 	url = https://github.com/SanderMertens/flecs.git
 [submodule "raylib"]
-	path = raylib
+	path = external/raylib
 	url = https://github.com/raysan5/raylib.git
