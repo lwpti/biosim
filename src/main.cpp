@@ -26,9 +26,7 @@ static constexpr int FPS = 30;
 // Do not change this
 static constexpr float TIME_STEP = 0.1f;
 // You can change this to speed up the sim!
-static constexpr int SIM_SPEED = 100;
-static constexpr int WORLD_WIDTH = 1024;
-static constexpr int WORLD_HEIGHT = 1024;
+static constexpr int SIM_SPEED = 1;
 
 static Texture2D flowerTexture;
 
@@ -36,7 +34,7 @@ int main() {
     using namespace simbio;
     using namespace organism;
     
-    simbio::World world{ WORLD_WIDTH, WORLD_HEIGHT, TIME_STEP };
+    simbio::World world{ TIME_STEP };
     // Sync simulation speed with real time using FPS
     world.simulationSpeed = std::max(1, (int)(SIM_SPEED / TIME_STEP / FPS));
 
@@ -68,8 +66,8 @@ int main() {
     std::random_device rd;
     std::mt19937 rng(rd());
     std::uniform_int_distribution<int> sizeDist(Flower::MIN_SIZE, Flower::MAX_SIZE);
-    std::uniform_real_distribution<float> xDist(0.0f, world.width - 0.001f);
-    std::uniform_real_distribution<float> yDist(0.0f, world.height - 0.001f);
+    std::uniform_real_distribution<float> xDist(0.0f, World::WIDTH - 0.001f);
+    std::uniform_real_distribution<float> yDist(0.0f, World::HEIGHT - 0.001f);
     for (int i = 0; i < 5000; ++i) 
         while (!world.spawnFlower((float)sizeDist(rng), xDist(rng), yDist(rng)));
 
@@ -78,18 +76,18 @@ int main() {
 
     // Spawn some Mover entities.
     mover::Mover mover(world.flecsWorld);
-    spawnOrganismsInBox(mover, 1, world, 100.0f, 100.0f, 200.0f, 200.0f);
+    spawnOrganismsInBox(mover, 10, world, 0.0f, 0.0f, 128.0f, 128.0f);
 
     // Spawn some Eater entities.
     eater::Eater eater(world.flecsWorld);
-    spawnOrganismsInBox(eater, 3, world, 800.0f, 800.0f, 900.0f, 900.0f);
+    spawnOrganismsInBox(eater, 10, world, 256.0f, 256.0f, 384.0f, 384.0f);
 
     // Register eating / grabbing systems.
     //systems::Eating eating;
     //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
     //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
 
-    InitWindow(world.width, world.height, "SimBio");
+    InitWindow(World::WIDTH, World::HEIGHT, "SimBio");
     SetTargetFPS(FPS);
 
     // Prep flower texture
@@ -118,6 +116,11 @@ int main() {
     SetExitKey(KEY_ENTER);
 
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_RIGHT)) {
+            world.simulationSpeed = world.simulationSpeed * 2;
+        } else if (IsKeyPressed(KEY_LEFT)) {
+            world.simulationSpeed = std::max(1, world.simulationSpeed / 2);
+        }
         BeginDrawing();
         ClearBackground(::BLACK);
 
@@ -145,6 +148,11 @@ int main() {
             });
             draw(world.flecsWorld);
             EndDrawing();
+            if (IsKeyPressed(KEY_RIGHT)) {
+                world.simulationSpeed = std::min(world.simulationSpeed * 3, SIM_SPEED);
+            } else if (IsKeyPressed(KEY_LEFT)) {
+                world.simulationSpeed = std::max(world.simulationSpeed / 3, 1);
+            }
             if (WindowShouldClose()) break;
             BeginDrawing();
             ClearBackground(::BLACK);
@@ -153,6 +161,11 @@ int main() {
             });
             draw(world.flecsWorld);
             EndDrawing();
+            if (IsKeyPressed(KEY_RIGHT)) {
+                world.simulationSpeed = std::min(world.simulationSpeed * 3, SIM_SPEED);
+            } else if (IsKeyPressed(KEY_LEFT)) {
+                world.simulationSpeed = std::max(world.simulationSpeed / 3, 1);
+            }
             if (WindowShouldClose()) break;
             BeginDrawing();
             ClearBackground(::BLACK);
@@ -251,7 +264,7 @@ void draw(flecs::world& world) {
         Rectangle source { 0.0f, 0.0f, (float)flowerTexture.width, (float)flowerTexture.height };
         Rectangle dest { location.x, location.y, 
             flowerTexture.width * scale, flowerTexture.height * scale };
-        Vector2 origin = { source.width * 0.5f, source.height * 0.5f };
+        Vector2 origin = { dest.width * 0.5f, dest.height * 0.5f };
 
         DrawTexturePro(flowerTexture, source, dest, origin, 0.0f, ::WHITE);
     });

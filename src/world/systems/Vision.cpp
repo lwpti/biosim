@@ -10,7 +10,7 @@ namespace simbio {
     namespace systems {
         void Vision::registerVisionSystem(World& world) {
             using namespace simbio::organism;
-            world.flecsWorld.system<Location, Eyes, Status>().each([&](flecs::entity entity,
+            world.flecsWorld.system<Location, Eyes, Status>().kind(flecs::PostLoad).each([&](flecs::entity entity,
                 const Location& location, const Eyes eyes, Status status) {
                 Sight sight;
 
@@ -70,14 +70,12 @@ namespace simbio {
                     if (pointX > maxX) maxX = pointX;
                 }
                 
-
                 world.forEntitiesInBox(minX, minY, maxX, maxY, [&](organism::Entity& targetEntity) {
                     if (targetEntity.flecsID == entity.id()) return;
-                    float distX = targetEntity.location.x - entityX;
-                    float distY = targetEntity.location.y - entityY;
-                    float dist2 = distX * distX + distY * distY;
+                    Vector2 dist = world.distance(location, targetEntity.location);
+                    float dist2 = dist.x * dist.x + dist.y * dist.y;
                     if (dist2 > viewDist * viewDist) return;
-                    float angle = std::atan2(distY, distX) - yaw;
+                    float angle = std::atan2(dist.y, dist.x) - yaw;
                     if (angle > PI || angle <= -PI) angle = std::atan2(std::sin(angle), std::cos(angle));
                     if (std::fabs(angle) > halfFOV) return;
                     float yawX = std::cos(location.yaw);
@@ -89,7 +87,8 @@ namespace simbio {
                     sight.visibleEntities.push_back({ targetEntity, relativeV, std::sqrt(dist2), angle });
                 });
 
-                entity.set<Sight>(sight);
+                if (Sight* s = entity.try_get_mut<Sight>()) s->visibleEntities = sight.visibleEntities;
+                else entity.set<Sight>(sight);
             });
         }
     }

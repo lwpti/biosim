@@ -71,8 +71,8 @@ namespace simbio {
 			/// </summary>
 			/// <param name="world">flecs world which the system is registed in</param>
 			Organism(flecs::world& world) : world(world) {
-				world.system<Brain, Status, Location, Velocity>()
-					.each([this](flecs::entity e, Brain& brain, Status& status, 
+				world.system<Brain, Status, Location, Velocity>().kind(flecs::PreUpdate).each(
+					[this](flecs::entity e, Brain& brain, Status& status, 
 						const Location& location, const Velocity& velocity) {
 					Organs organs;
 					if (const Arms* arms = e.try_get<Arms>()) organs.arms = *arms;
@@ -86,11 +86,9 @@ namespace simbio {
 					Percepts percepts;
 					if (const Sight* sight = e.try_get<Sight>()) {
 						percepts.sight = *sight;
-						e.remove<Sight>();
 					}
 					if (const Sound* sound = e.try_get<Sound>()) {
 						percepts.sound = *sound;
-						e.remove<Sound>();
 					}
 
 					Intents intents;
@@ -115,7 +113,13 @@ namespace simbio {
 							e.set<LegsRequest>(legsRequest);
 						}
 					}
-					if (intents.bite.has_value()) e.set<BiteIntent>(*intents.bite);
+					if (intents.bite.has_value()) {
+						if (BiteIntent* biteIntent = e.try_get_mut<BiteIntent>()) {
+							biteIntent->strength = intents.bite->strength;
+						} else {
+							e.set<BiteIntent>(*intents.bite);
+						}
+					}
 				});
 			}
 

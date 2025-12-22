@@ -2,10 +2,9 @@
 #include "Entity.h"
 
 namespace simbio {
-    World::World(int width, int height, float timeStep) 
-        : width(width - width % CHUNK_SIZE), height(height - height % CHUNK_SIZE), 
-        timeStep(timeStep), chunkCols(width / CHUNK_SIZE), 
-        chunkRows(height / CHUNK_SIZE), chunkGrid(chunkCols * chunkRows) {
+    World::World(float timeStep) 
+        : timeStep(timeStep), chunkCols(WIDTH / CHUNK_SIZE), 
+        chunkRows(HEIGHT / CHUNK_SIZE), chunkGrid(chunkCols * chunkRows) {
     }
 
     bool World::spawnFlower(float size, float x, float y) {
@@ -38,6 +37,18 @@ namespace simbio {
 
     void World::progress() {
         for (int i = 0; i < simulationSpeed; ++i) flecsWorld.progress(timeStep);
+    }
+
+    Vector2 World::distance(const simbio::organism::Location& from,  const simbio::organism::Location& to) {
+        float dx = std::fmod(to.x - from.x + WIDTH * 1.5f, WIDTH) - WIDTH * 0.5f;
+        float dy = std::fmod(to.y - from.y + HEIGHT * 1.5f, HEIGHT) - HEIGHT * 0.5f;
+        return Vector2{dx, dy};
+    }
+
+    Vector2 World::distance(float fromX, float fromY, float toX, float toY) {
+        float dx = std::fmod(toX - fromX + WIDTH * 1.5f, WIDTH) - WIDTH * 0.5f;
+        float dy = std::fmod(toY - fromY + HEIGHT * 1.5f, HEIGHT) - HEIGHT * 0.5f;
+        return Vector2{dx, dy};
     }
 
     void World::forNearbyEntities(simbio::organism::Location location, 
