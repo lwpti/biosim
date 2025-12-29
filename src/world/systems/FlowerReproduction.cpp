@@ -6,7 +6,7 @@
 #include "Entity.h"
 #include <random>
 
-namespace simbio {
+namespace biosim {
 	namespace systems {
 		using namespace organism;
 

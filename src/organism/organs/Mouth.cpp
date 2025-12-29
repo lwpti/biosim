@@ -2,7 +2,7 @@
 #include "World.h"
 #include "Body.h"
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         void Mouth::registerMouthObserver(World& world) {
             world.flecsWorld.observer<Mouth>().event(flecs::OnSet).each(

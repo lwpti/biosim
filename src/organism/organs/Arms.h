@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         /// <summary>
         /// flecs component; Arms determine how strongly an organism can hold another.

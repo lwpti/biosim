@@ -4,7 +4,7 @@
 #include "data/Data.h"
 #include "organs/Organs.h"
 
-namespace simbio {
+namespace biosim {
 	namespace organism {
         struct Entity {
 			flecs::entity_t flecsID;

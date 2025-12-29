@@ -9,7 +9,7 @@
 #include "Entity.h"
 #include <cmath>
 
-namespace simbio {
+namespace biosim {
 	namespace organism {
 		// This needs to be verified. Is this enough (or too much) to ensure T will work with flecs?
 		template <typename T>

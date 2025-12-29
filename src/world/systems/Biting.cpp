@@ -9,7 +9,7 @@
 #include "organs/Mouth.h"
 #include "Entity.h"
 
-namespace simbio {
+namespace biosim {
     namespace systems {
 
         using namespace organism;

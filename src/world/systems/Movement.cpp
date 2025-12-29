@@ -5,7 +5,7 @@
 #include "raylib.h"
 #include <algorithm>
 
-namespace simbio {
+namespace biosim {
     namespace systems {
         using namespace organism;
 

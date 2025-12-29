@@ -4,7 +4,7 @@
 #include "organs/Organs.h"
 #include "World.h"
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         template<typename T>
         concept Organ = requires(T t) {

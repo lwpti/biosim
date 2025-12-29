@@ -4,7 +4,7 @@
 #include "Organism.h"
 
 namespace mover {
-	using namespace simbio::organism;
+	using namespace biosim::organism;
 	
 	struct MoverBrain {
 		int dummy;

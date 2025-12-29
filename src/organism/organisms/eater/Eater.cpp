@@ -1,7 +1,7 @@
 #include "Eater.h"
 
 namespace eater {
-	using namespace simbio::organism;
+	using namespace biosim::organism;
 
 	Eater::Eater(flecs::world& world) : Organism<EaterBrain>(world) {}
 
@@ -11,7 +11,7 @@ namespace eater {
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10, 10 })
-			.set<simbio::organism::Color>({ 149, 242, 21 });
+			.set<biosim::organism::Color>({ 149, 242, 21 });
 	}
 
 	flecs::entity Eater::create(const flecs::entity& parent) const {
@@ -20,7 +20,7 @@ namespace eater {
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10, 10 })
-			.set<simbio::organism::Color>({ 149, 242, 21 });
+			.set<biosim::organism::Color>({ 149, 242, 21 });
 	}
 
 	flecs::entity Eater::create(const flecs::entity& mother, const flecs::entity& father) const {
@@ -29,7 +29,7 @@ namespace eater {
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10, 10 })
-			.set<simbio::organism::Color>({ 149, 242, 21 });
+			.set<biosim::organism::Color>({ 149, 242, 21 });
 	}
 
 	// Currently, the Eater brain just tries to bite constantly.

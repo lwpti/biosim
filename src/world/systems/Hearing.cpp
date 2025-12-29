@@ -3,7 +3,7 @@
 #include "data/Status.h"
 #include "raylib.h"
 
-namespace simbio {
+namespace biosim {
 	namespace systems {
 		using namespace organism;
 		void Hearing::registerHearingSystem(World& world) {

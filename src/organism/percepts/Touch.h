@@ -3,7 +3,7 @@
 #include <flecs.h>
 #include "data/Location.h"
 
-namespace simbio {
+namespace biosim {
     namespace organism {
 
         // Component added to the grabber: "I am holding this entity"

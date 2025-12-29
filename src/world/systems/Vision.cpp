@@ -6,10 +6,10 @@
 #include "flecs.h"
 #include "raylib.h"
 
-namespace simbio {
+namespace biosim {
     namespace systems {
         void Vision::registerVisionSystem(World& world) {
-            using namespace simbio::organism;
+            using namespace biosim::organism;
             world.flecsWorld.system<Location, Eyes, Status>().kind(flecs::PostLoad).each([&](flecs::entity entity,
                 const Location& location, const Eyes eyes, Status status) {
                 Sight sight;

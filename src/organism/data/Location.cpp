@@ -2,7 +2,7 @@
 #include "raylib.h"
 #include <cmath>
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         Location Location::lerp(const Location& from, const Location& to, float t) {
             if (from.yaw < 0 && to.yaw > 0 && std::fabs(from.yaw - to.yaw) > PI) {

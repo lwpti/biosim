@@ -7,7 +7,7 @@
 #include "data/Location.h"
 #include "World.h"
 
-namespace simbio {
+namespace biosim {
     namespace systems {
         class Vision {
             public:

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace simbio {
+namespace biosim {
 	class World;
 
 	namespace organism {

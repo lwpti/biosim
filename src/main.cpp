@@ -18,8 +18,8 @@ void draw(flecs::world& world);
 /// adding them to the chunk grid for spatial partitioning.
 /// </summary>
 template <typename Brain>
-void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
-    simbio::World& world, float minX, float minY, float maxX, float maxY);
+void spawnOrganismsInBox(biosim::organism::Organism<Brain>& organism, int count, 
+    biosim::World& world, float minX, float minY, float maxX, float maxY);
 
 // I recommend not changing this
 static constexpr int FPS = 30;
@@ -31,10 +31,10 @@ static constexpr int SIM_SPEED = 1;
 static Texture2D flowerTexture;
 
 int main() {
-    using namespace simbio;
+    using namespace biosim;
     using namespace organism;
     
-    simbio::World world{ TIME_STEP };
+    biosim::World world{ TIME_STEP };
     // Sync simulation speed with real time using FPS
     world.simulationSpeed = std::max(1, (int)(SIM_SPEED / TIME_STEP / FPS));
 
@@ -87,7 +87,7 @@ int main() {
     //eating.registerGrabbingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
     //eating.registerBitingSystem(flecsWorld, chunkGrid, CHUNK_SIZE, chunkCols, chunkRows);
 
-    InitWindow(World::WIDTH, World::HEIGHT, "SimBio");
+    InitWindow(World::WIDTH, World::HEIGHT, "BioSim");
     SetTargetFPS(FPS);
 
     // Prep flower texture
@@ -184,8 +184,8 @@ int main() {
 }
 
 template <typename Brain>
-void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count, 
-    simbio::World& world, float minX, float minY, float maxX, float maxY) {
+void spawnOrganismsInBox(biosim::organism::Organism<Brain>& organism, int count, 
+    biosim::World& world, float minX, float minY, float maxX, float maxY) {
     std::random_device rd;
     std::mt19937 rng(rd());
     std::uniform_real_distribution<float> xDist(minX, maxX);
@@ -195,25 +195,25 @@ void spawnOrganismsInBox(simbio::organism::Organism<Brain>& organism, int count,
 }
 
 void draw(flecs::world& world) {
-    using namespace simbio::organism;
+    using namespace biosim::organism;
 
     // Initialize queries for displaying organisms and plants.
-    static auto drawBodyQuery = world.query<const simbio::organism::Color, 
+    static auto drawBodyQuery = world.query<const biosim::organism::Color, 
         const Body, const Location>();
-    static auto drawLegsQuery = world.query<const simbio::organism::Color, 
+    static auto drawLegsQuery = world.query<const biosim::organism::Color, 
         const Body, const Legs, const Location>();
-    static auto drawMouthQuery = world.query<const simbio::organism::Color, 
+    static auto drawMouthQuery = world.query<const biosim::organism::Color, 
         const Body, const Mouth, const Location>();
-    static auto drawFlowersQuery = world.query<const simbio::organism::Color, 
+    static auto drawFlowersQuery = world.query<const biosim::organism::Color, 
         const Flower, const Location>();
 
-    drawBodyQuery.each([](const simbio::organism::Color& color, const Body& body, 
+    drawBodyQuery.each([](const biosim::organism::Color& color, const Body& body, 
         const Location& location) {
         DrawCircleV({ location.x, location.y }, body.size * 0.5f, 
             ::Color{ color.r, color.g, color.b, 255 });
     });
 
-    drawLegsQuery.each([](const simbio::organism::Color& color, const Body& body, 
+    drawLegsQuery.each([](const biosim::organism::Color& color, const Body& body, 
         const Legs& legs, const Location& location) {
         float radius = body.size * 0.5f;
         const int numLegs = 4;
@@ -234,7 +234,7 @@ void draw(flecs::world& world) {
         }
     });
 
-    drawMouthQuery.each([](const simbio::organism::Color& color, const Body& body, 
+    drawMouthQuery.each([](const biosim::organism::Color& color, const Body& body, 
         const Mouth& mouth, const Location& location) {
         float radius = body.size * 0.5f;
 
@@ -256,7 +256,7 @@ void draw(flecs::world& world) {
         DrawLineEx(base, rightTip, 1.0f, ::Color{ 255, 255, 255, 255 });
     });
 
-    drawFlowersQuery.each([](const simbio::organism::Color& color, 
+    drawFlowersQuery.each([](const biosim::organism::Color& color, 
         const Flower& flower, const Location& location) {
         float radius = flower.size / 2.0f;
         float scale = flower.size / Flower::MAX_SIZE;

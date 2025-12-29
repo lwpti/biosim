@@ -4,7 +4,7 @@
 #include "Organism.h"
 
 namespace eater {
-	using namespace simbio::organism;
+	using namespace biosim::organism;
 	
 	struct EaterBrain {
 		int dummy;

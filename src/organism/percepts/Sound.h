@@ -1,6 +1,6 @@
 #pragma once
 
-namespace simbio {
+namespace biosim {
 	namespace organism {
 		struct Sound {
 			float volume{ 0 };

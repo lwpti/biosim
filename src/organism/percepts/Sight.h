@@ -10,7 +10,7 @@
 #include <cmath>
 #include "Entity.h"
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         struct EntityView {
             Color color { 255, 255, 255 };

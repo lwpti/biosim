@@ -6,7 +6,7 @@
 #include "Entity.h"
 #include "World.h"
 
-namespace simbio {
+namespace biosim {
 	namespace systems {
 		class FlowerReproduction {
 		public:

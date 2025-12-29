@@ -8,7 +8,7 @@
 #include "Mouth.h"
 #include "Flower.h"
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         /// <summary>
         /// Convenient structure grouping all organ components.

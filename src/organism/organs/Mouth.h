@@ -1,6 +1,6 @@
 #pragma once
 
-namespace simbio {
+namespace biosim {
 	class World;
 
 	namespace organism {

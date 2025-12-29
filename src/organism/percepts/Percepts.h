@@ -5,7 +5,7 @@
 #include "Touch.h"
 #include <optional>
 
-namespace simbio {
+namespace biosim {
     namespace organism {
         /// <summary>
         /// Convenient structure grouping percept structs.

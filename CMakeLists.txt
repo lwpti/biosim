@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(SimBio LANGUAGES C CXX)
+project(BioSim LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,9 +10,9 @@ set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/raylib)
 add_subdirectory(external/flecs)
 
-add_executable(SimBio)
+add_executable(BioSim)
 
-target_sources(SimBio PRIVATE
+target_sources(BioSim PRIVATE
     src/main.cpp
 
     src/world/systems/Movement.cpp
@@ -34,11 +34,11 @@ target_sources(SimBio PRIVATE
     src/organism/organisms/mover/Mover.cpp
 )
 
-target_include_directories(SimBio PRIVATE
+target_include_directories(BioSim PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/organism>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/world>
 )
 
-target_link_libraries(SimBio PRIVATE flecs_static raylib)
+target_link_libraries(BioSim PRIVATE flecs_static raylib)
 
-target_compile_definitions(SimBio PRIVATE FLECS_CPP_NO_ENUM_REFLECTION)
+target_compile_definitions(BioSim PRIVATE FLECS_CPP_NO_ENUM_REFLECTION)

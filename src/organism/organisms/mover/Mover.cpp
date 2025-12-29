@@ -9,7 +9,7 @@ namespace mover {
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
 			.set<Mouth>({ 10 })
-			.set<simbio::organism::Color>({ 41, 242, 141 });
+			.set<biosim::organism::Color>({ 41, 242, 141 });
 	}
 
 	flecs::entity Mover::create(const flecs::entity& parent) const {
@@ -17,7 +17,7 @@ namespace mover {
 			.add<MoverBrain>()
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
-			.set<simbio::organism::Color>({ 41, 242, 141 });
+			.set<biosim::organism::Color>({ 41, 242, 141 });
 	}
 
 	flecs::entity Mover::create(const flecs::entity& mother, const flecs::entity& father) const {
@@ -25,7 +25,7 @@ namespace mover {
 			.add<MoverBrain>()
 			.set<Body>({ 10 })
 			.set<Legs>({ 10 })
-			.set<simbio::organism::Color>({ 41, 242, 141 });
+			.set<biosim::organism::Color>({ 41, 242, 141 });
 	}
 
 	// Currently, the Mover brain just accelerates in a random direction.

@@ -1,6 +1,6 @@
 #include "Grabbing.h"
 
-namespace simbio {
+namespace biosim {
     namespace systems {
         void Grabbing::registerGrabbingSystem(World& world) {
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace simbio {
+namespace biosim {
 	namespace organism {
 		/// <summary>
 		/// flecs component; describes a 24-bit color.

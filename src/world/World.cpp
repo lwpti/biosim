@@ -1,7 +1,7 @@
 #include "World.h"
 #include "Entity.h"
 
-namespace simbio {
+namespace biosim {
     World::World(float timeStep) 
         : timeStep(timeStep), chunkCols(WIDTH / CHUNK_SIZE), 
         chunkRows(HEIGHT / CHUNK_SIZE), chunkGrid(chunkCols * chunkRows) {
@@ -39,7 +39,7 @@ namespace simbio {
         for (int i = 0; i < simulationSpeed; ++i) flecsWorld.progress(timeStep);
     }
 
-    Vector2 World::distance(const simbio::organism::Location& from,  const simbio::organism::Location& to) {
+    Vector2 World::distance(const biosim::organism::Location& from,  const biosim::organism::Location& to) {
         float dx = std::fmod(to.x - from.x + WIDTH * 1.5f, WIDTH) - WIDTH * 0.5f;
         float dy = std::fmod(to.y - from.y + HEIGHT * 1.5f, HEIGHT) - HEIGHT * 0.5f;
         return Vector2{dx, dy};
@@ -51,7 +51,7 @@ namespace simbio {
         return Vector2{dx, dy};
     }
 
-    void World::forNearbyEntities(simbio::organism::Location location, 
+    void World::forNearbyEntities(biosim::organism::Location location, 
         const std::function<void(organism::Entity&)>& doThis) {
         const int chunkX = location.chunk % chunkCols;
         const int chunkY = location.chunk / chunkCols;

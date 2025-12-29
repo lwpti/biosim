@@ -8,7 +8,7 @@
 #include <functional>
 #include <raylib.h>
 
-namespace simbio {
+namespace biosim {
     class World {
         public:
         static constexpr int CHUNK_SIZE = 16;
@@ -29,7 +29,7 @@ namespace simbio {
 
         bool spawnFlower(float size, float x, float y);
         void progress();
-        static Vector2 distance(const simbio::organism::Location& from, const simbio::organism::Location& to);
+        static Vector2 distance(const biosim::organism::Location& from, const biosim::organism::Location& to);
         static Vector2 distance(float fromX, float fromY, float toX, float toY);
 
         template <typename Brain>
@@ -71,7 +71,7 @@ namespace simbio {
             return true;
         }
 
-        void forNearbyEntities(simbio::organism::Location location,
+        void forNearbyEntities(biosim::organism::Location location,
              const std::function<void(organism::Entity&)>& doThis);
 
         void forEntitiesInBox(float minX, float minY, float maxX, float maxY, 
