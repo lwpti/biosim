@@ -56,8 +56,7 @@ int main() {
     systems::Movement::registerMovementSystem(world);
 
     //Register Biting system
-    systems::Biting bitingSystem;
-    bitingSystem.registerBitingSystem(world);
+    systems::Biting::registerBitingSystem(world);
 
     // Register flower reproduction system.
     systems::FlowerReproduction::registerFlowerReproductionSystem(world);

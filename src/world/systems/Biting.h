@@ -10,7 +10,7 @@ namespace biosim {
             /// Registers system that processes BiteIntent and performs biting /
             /// killing behavior on nearby entities.
             /// </summary>
-            void registerBitingSystem(World& world);
+            static void registerBitingSystem(World& world);
 
             static constexpr float MAX_BITE_ANGLE = 0.2617993878f;
             // cos(PI / 12)^2, results in 15 degree range in each direction, AKA 30 degree arc 
