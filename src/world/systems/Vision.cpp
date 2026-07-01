@@ -4,7 +4,7 @@
 #include "organs/Eyes.h"
 #include "percepts/Sight.h"
 #include "flecs.h"
-#include "raylib.h"
+#include "Constants.h"
 
 namespace biosim {
     namespace systems {
@@ -21,16 +21,16 @@ namespace biosim {
                 float entityX = location.x;
                 float entityY = location.y;
                 float yaw = location.yaw;
-                float halfFOV = Vision::FOV * (PI / 180.0f) * 0.5f;
+                float halfFOV = Vision::FOV * (PI_F / 180.0f) * 0.5f;
                 float viewDist = eyes.size * Vision::RANGE_MULT;
 
                 float angle1 = yaw - halfFOV;
-                if (angle1 > PI || angle1 <= -PI) angle1 = std::atan2(std::sin(angle1), std::cos(angle1));
+                if (angle1 > PI_F || angle1 <= -PI_F) angle1 = normalizeRadians(angle1);
                 float point1X = entityX + viewDist * std::cos(angle1);
                 float point1Y = entityY + viewDist * std::sin(angle1);
 
                 float angle2 = yaw + halfFOV;
-                if (angle2 > PI || angle2 <= -PI) angle2 = std::atan2(std::sin(angle2), std::cos(angle2));
+                if (angle2 > PI_F || angle2 <= -PI_F) angle2 = normalizeRadians(angle2);
                 float point2X = entityX + viewDist * std::cos(angle2);
                 float point2Y = entityY + viewDist * std::sin(angle2);
 
@@ -50,17 +50,17 @@ namespace biosim {
                     if (py > maxY) maxY = py;
                 }
 
-                if (PI - std::fabs(yaw) < halfFOV) {
+                if (PI_F - std::fabs(yaw) < halfFOV) {
                     float pointX = entityX - viewDist;
                     if (pointX < minX) minX = pointX;
                 }
 
-                if (std::fabs(0.5f * PI - yaw) < halfFOV) {
+                if (std::fabs(0.5f * PI_F - yaw) < halfFOV) {
                     float pointY = entityY - viewDist;
                     if (pointY < minY) minY = pointY;
                 }
 
-                if (std::fabs(-0.5f * PI - yaw) < halfFOV) {
+                if (std::fabs(-0.5f * PI_F - yaw) < halfFOV) {
                     float pointY = entityY + viewDist;
                     if (pointY > maxY) maxY = pointY;
                 }
@@ -76,7 +76,7 @@ namespace biosim {
                     float dist2 = dist.x * dist.x + dist.y * dist.y;
                     if (dist2 > viewDist * viewDist) return;
                     float angle = std::atan2(dist.y, dist.x) - yaw;
-                    if (angle > PI || angle <= -PI) angle = std::atan2(std::sin(angle), std::cos(angle));
+                    if (angle > PI_F || angle <= -PI_F) angle = normalizeRadians(angle);
                     if (std::fabs(angle) > halfFOV) return;
                     float yawX = std::cos(location.yaw);
 					float yawY = std::sin(location.yaw);

@@ -37,6 +37,7 @@ target_sources(BioSim PRIVATE
 target_include_directories(BioSim PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/organism>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/world>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/util>
 )
 
 target_link_libraries(BioSim PRIVATE flecs_static raylib)

@@ -7,6 +7,7 @@
 #include "organs/OrganObserver.h"
 #include <random>
 #include <map>
+#include "Constants.h"
 
 /// <summary>
 /// Draws all organisms and plants in the flecs world.
@@ -217,8 +218,8 @@ void draw(flecs::world& world) {
         float radius = body.size * 0.5f;
         const int numLegs = 4;
 
-        const float offsets[numLegs] = { -2.0f * PI / 3.0f, -PI / 3.0f, 
-            PI / 3.0f, 2.0f * PI / 3.0f };
+        const float offsets[numLegs] = { -2.0f * biosim::PI_F / 3.0f, -biosim::PI_F / 3.0f, 
+            biosim::PI_F / 3.0f, 2.0f * biosim::PI_F / 3.0f };
 
         for (int i = 0; i < numLegs; ++i) {
             float angle = location.yaw + offsets[i];

@@ -1,7 +1,7 @@
 #include "Hearing.h"
 #include <cmath>
 #include "data/Status.h"
-#include "raylib.h"
+#include "Constants.h"
 
 namespace biosim {
 	namespace systems {
@@ -44,7 +44,7 @@ namespace biosim {
 								float volume = radius - std::sqrt(dist2);
 								float freq = 180.0f + body.size * 8.0f + legs.size * 4.0f;
 								float direction = std::atan2(distY, distX) - entity.location.yaw;
-								if (std::fabs(direction) > PI) direction = std::atan2(std::sin(direction), std::cos(direction));
+								if (std::fabs(direction) > PI_F) direction = std::atan2(std::sin(direction), std::cos(direction));
 
 								Sound* heard = listener.try_get_mut<Sound>();
 								if (heard == nullptr) listener.set<Sound>({ volume, freq, direction });

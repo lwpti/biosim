@@ -1,6 +1,7 @@
 #pragma once
 
 #include "World.h"
+#include "Constants.h"
 
 namespace biosim {
     namespace systems {
@@ -12,9 +13,9 @@ namespace biosim {
             /// </summary>
             static void registerBitingSystem(World& world);
 
-            static constexpr float MAX_BITE_ANGLE = 0.2617993878f;
+            static constexpr float MAX_BITE_ANGLE = PI_F / 12.0f;
             // cos(PI / 12)^2, results in 15 degree range in each direction, AKA 30 degree arc 
-            static constexpr float MIN_BITE_DOT2 = 0.933012702f;
+            inline static const float MIN_BITE_DOT2 = std::cos(MAX_BITE_ANGLE) * std::cos(MAX_BITE_ANGLE);
             // Mouth consumes ~11% of energy if used continuously, and total usage ~= 2/s
             static constexpr float BITE_ENERGY_COST = 0.22f;
         };

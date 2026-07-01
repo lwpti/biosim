@@ -2,7 +2,7 @@
 #include "organs/Legs.h"
 #include "data/Data.h"
 #include "Entity.h"
-#include "raylib.h"
+#include "Constants.h"
 #include <algorithm>
 
 namespace biosim {
@@ -94,8 +94,8 @@ namespace biosim {
                 float dYaw = request.yaw * world.timeStep;
                 location.yaw += dYaw;
                 status.energy -= YAW_ENERGY_COST * legs.size / Legs::MAX_SIZE * dYaw / MAX_YAW;
-                if (location.yaw > PI || location.yaw <= -PI) 
-                    location.yaw = std::atan2(std::sin(location.yaw), std::cos(location.yaw));
+                if (location.yaw > PI_F || location.yaw <= -PI_F) 
+                    location.yaw = normalizeRadians(location.yaw);
 
                 status.energy -= MOVE_ENERGY_COST * legs.size / Legs::MAX_SIZE * s / maxS * world.timeStep;
                 
