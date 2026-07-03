@@ -6,6 +6,7 @@
 #include "data/Status.h"
 #include "data/Color.h"
 #include "data/Velocity.h"
+#include <algorithm>
 #include <vector>
 #include <cmath>
 #include "Entity.h"
@@ -21,8 +22,10 @@ namespace biosim {
             float direction{ 0.0f };
 
             float getSize() const {
-                return (std::max)(organs.body.size, organs.flower.size) +
-                    (std::max)({ organs.arms.size, organs.legs.size, organs.mouth.size });
+                return (std::max)(Organs::sizeOf(organs.body), Organs::sizeOf(organs.flower)) +
+                    (std::max)({ Organs::sizeOf(organs.arms),
+                        Organs::sizeOf(organs.legs),
+                        Organs::sizeOf(organs.mouth) });
             }
 
             EntityView(const Entity& e, Velocity velocity, float distance, float direction) {

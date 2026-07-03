@@ -8,20 +8,27 @@
 #include "Mouth.h"
 #include "Flower.h"
 
+#include <optional>
+
 namespace biosim {
     namespace organism {
         /// <summary>
         /// Convenient structure grouping all organ components.
-        /// Organ.size = 0 means the organ is not present.
+        /// A null optional means the organ is not present.
         /// </summary>
         struct Organs {
-            Body body{ 0.0f };
-            Legs legs{ 0.0f };
-            Mouth mouth{ 0.0f };
-            Arms arms{ 0.0f };
-            Ears ears{ 0.0f };
-            Eyes eyes{ 0.0f };
-            Flower flower{ 0.0f };
+            std::optional<Body> body;
+            std::optional<Legs> legs;
+            std::optional<Mouth> mouth;
+            std::optional<Arms> arms;
+            std::optional<Ears> ears;
+            std::optional<Eyes> eyes;
+            std::optional<Flower> flower;
+
+            template <typename Organ>
+            static float sizeOf(const std::optional<Organ>& organ) {
+                return organ.has_value() ? organ->size : 0.0f;
+            }
         };
     }
 }

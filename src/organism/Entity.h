@@ -2,6 +2,7 @@
 
 #include <flecs.h>
 #include "data/Data.h"
+#include <algorithm>
 #include "organs/Organs.h"
 
 namespace biosim {
@@ -15,7 +16,7 @@ namespace biosim {
 			Organs organs;
 
 			float getSize() const {
-				return (std::max)(organs.body.size, organs.flower.size);
+				return (std::max)(Organs::sizeOf(organs.body), Organs::sizeOf(organs.flower));
 			}
 		};
     }
